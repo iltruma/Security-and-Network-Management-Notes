@@ -1,0 +1,88 @@
+\documentclass[a4paper,italian,11pt,openany]{book}
+\usepackage[a4paper,top=1.5cm,bottom=1.5cm,left=2cm,right=2cm]{geometry}
+\usepackage{epstopdf}
+\usepackage{graphicx}
+\DeclareGraphicsExtensions{.png,.jpg,.pdf}
+\usepackage{subfigure}
+\usepackage[utf8]{inputenc}
+\usepackage[italian]{babel}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\diver}{div}
+\DeclareMathOperator{\mean}{mean}
+\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage{multicol}
+\usepackage{clrscode3e}
+\usepackage{listings}
+\lstset{basicstyle=\footnotesize\ttfamily,frame=single,showstringspaces=false}
+\usepackage{textcomp}
+\usepackage{pgf}
+\usepackage{pgfplots}
+\usepackage{tikz}
+\usetikzlibrary{arrows,shapes.geometric,automata}
+\tikzstyle{rect} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm, text centered, draw=black]
+\tikzstyle{process} = [rectangle, minimum width=3cm, minimum height=1cm, text centered, draw=black]
+\tikzstyle{arrow} = [thick,->,>=stealth]
+\usetikzlibrary{calc}
+\usepackage{bytefield}
+\newcommand{\shellcmd}[1]{\\\indent\indent\texttt{\footnotesize\$ #1}\\}
+\usepackage{color}							%Tmp package, to be removed at the end
+\newcommand{\todo}[1]{\textcolor{red}{TODO: #1\\}}
+\usepackage{booktabs}
+\theoremstyle{definition} 
+\newtheorem{defn}{Definizione}[chapter]
+\theoremstyle{proposition}
+\newtheorem{prop}{Proposizione}[chapter]
+\theoremstyle{theorem}
+\newtheorem{thm}{Teorema}[chapter]
+\theoremstyle{definition}
+\newtheorem{example}{Esempio}[chapter]
+\usepackage[pdftex, pdfauthor={Alessio Sortino}, pdftitle={Notes of Security and Network Management}]{hyperref}
+\hypersetup{ pdfborder = {0 0 0} }
+\makeatletter
+\newcommand\HUGE{\@setfontsize\Huge{60}{70}}
+\makeatother    
+ 
+%\usepackage{fancyhdr}
+%\pagestyle{fancy}
+%\rfoot{$\mathbb{A.S.}$}
+\begin{document}
+\begin{titlepage}
+	\centering
+	\vspace*{\stretch{1}}
+	%{\Large Nome Cognome\par}
+	\vspace{1cm}
+	
+	{ {\HUGE \textsc{Security and Network Management}} \par}
+	\vspace{3cm}
+	{\huge $\mathcal{M}$\textit{aster's Degree in Computer Engineering\\University of Florence} \par}
+	\vspace{0.5cm}
+	{\LARGE $\mathcal{A}$\textit{lessio Sortino}\par}
+	\vspace{0.7cm}
+	{\Large $\mathcal{D}$\textit{ecember, 2016} \par}
+	\vspace*{\stretch{2}}
+	\vspace*{\stretch{1}}
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[scale = 0.5]{header/logo-unifi.png}
+		\label{header}
+	\end{figure}
+	\vspace*{\stretch{2}}
+\end{titlepage}
+% Uncomment to print Index of document
+\tableofcontents
+
+% Include chapters
+\include{files/introduction}
+\include{files/chapter1}
+\include{files/chapter2}
+\include{files/chapter3}
+\include{files/chapter4}
+\include{files/chapter5}
+\include{files/chapter6}
+%\include{files/chapter7}
+%\include{files/chapter8}
+
+\end{document}

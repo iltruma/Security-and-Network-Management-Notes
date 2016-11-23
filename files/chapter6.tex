@@ -1,0 +1,159 @@
+\chapter{Sicurezza delle reti wireless}
+In questo capitolo verrà data inizialmente una breve panoramica sulle tecnologie wireless, seguita da una descrizione dettagliata del protocollo 802.11 (Wi-Fi) e delle sue insicurezze.
+
+Introduciamo brevemente le due topologie di reti wireless (Figura \ref{img:wireless-topology}):
+\begin{enumerate}
+	\item \textbf{Modello infrastructure (o centralizzato)}. Questo tipo di rete ha origine da reti wireless commerciali, quindi vi è una stazione base detta \textit{Access Point} (AP), connessa in modo privato alla rete internet, alla quale si connettono tutti i dispositivi.
+	\item \textbf{Modello ad-hoc (o distribuito)}. Questo tipo di rete si basa sulle comunicazioni multi-hop tra gli host della rete. Nel caso di rete locale il routing è diretto dal livello 7 perché è sufficiente l'indirizzo IP; nel caso di rete multi-hop, invece, il routing è quello classico, quindi vi sono tutti i problemi relativi agli attacchi.
+\end{enumerate}
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale = 0.4]{images/wireless-topology}
+	\caption{Topologie reti wireless: centralizzata e distribuita.}
+	\label{img:wireless-topology}
+\end{figure}
+In una rete centralizzata è necessario avere una mutua autenticazione tra host e AP centrale, mentre in una multi-hop tutti devono fidarsi di tutti quindi un attaccante può facilmente manipolare la rete una volta dentro.
+
+La diffusione del Wi-Fi è dovuta principalmente alla sua semplicità di installazione, all'assenza di cavi ed alla comodità. Nelle reti Wi-Fi la banda utilizzabile effettivamente è una piccola percentuale rispetto al bitrate massimo: ad esempio nell'802.11b si ha un bitrate massimo di 5 Mb/s che è molto inferiore rispetto a quello massimo ($\approx$ 10 Mb/s). Il vantaggio principale di una rete ad-hoc è il multi-hop; lo scopo di queste reti è quello di essere del tutto auto-organizzanti ed estendibili.
+
+Il fatto che per le reti wireless vi sia una mancanza di un limite geografico implica che le informazioni possono essere \textit{sniffate} più facilmente e si possono subire attacchi dall'esterno, dunque il rischio per l'attaccante è minimo. Vi è inoltre una ridefinizione del ruolo del livello MAC: l'accesso è inteso anche come \textquotedblleft controllo degli accessi"; a questo si aggiunge una maggior complessità dei firmware e dei driver. Si tenga comunque presente che abbiamo a che fare con dispositivi aventi risorse computazionali limitate.
+
+Gli \textit{hotspot} sono punti di accesso ad internet che utilizzano la tecnologia wireless (normalmente 802.11) in modalità infrastructure. I vantaggi sono molteplici, ad esempio: abbattimento dei costi di gestione (non c'è cablaggio) ed installazione immediata. Vengono comunemente utilizzati in aeroporti, stazioni e alberghi. I problemi relativi alla gestione sono principalmente la limitazione del raggio e degli accessi.
+
+Le reti \textit{ad-hoc/mesh} sono reti \textit{spontanee}, auto-organizzanti. Vengono principalmente utilizzate per ritrovi temporanei, riunioni, interventi in situazioni di emergenza, reti tattiche militari, ambienti con mancanza di infrastruttura (montagna, fiera), per sopperire al problema dell'ultimo miglio e per coprire aree molto estese.
+
+Le reti \textit{PAN (Personal Area Network)} (dette anche Low-Power) sono reti di dimensioni ridotte utilizzate per interconnettere apparati (stampanti, computer, cellulari), configurate normalmente in modalità ad-hoc senza routing. Queste reti presentano un bitrate molto basso ed un raggio di copertura che può variare molto. La tecnologia più evoluta è lo standard Bluetooth, adesso confluito nell'IEEE 802.15.
+
+Per quanto riguarda la \textit{legislazione}, le reti 802.11 b/g lavorano in frequenze non regolate (2.4 GHz, banda ISM -- Industrial, Scientific, Medical), quindi non sono soggette a licenza. Per queste frequenze in Italia il limite di potenza trasmissibile è di 100 mW per metro quadro, che permette comunicazioni in spazio libero fino a circa 300 metri con tecnologia 802.11. Le leggi ed i decreti presenti in Italia regolamentano l'utilizzo delle delle frequenze ISM e le modalità di autenticazione rendendone molto complicato l'utilizzo su suolo pubblico: questo ha frenato decisamente la diffusione di tali tecnologie sul suolo pubblico rispetto ad altri paesi (in cui vi sono regolamentazioni diverse). Lo svantaggio di ISM è la concentrazione di device che porta a collisioni continue.
+
+La tecnologia \textit{WiMax} utilizza invece frequenze non in banda ISM. WiMax è una tecnologia nata per sostituire le connessioni cablate, che vanno dalla centrale del gestore alle singole abitazioni, anche connettendo tra loro più hotspot 802.11. Gli standard di riferimento dono l'IEEE 802.16d del 2004, e l'IEEE 802.16e del 2005. WiMax può utilizzare uno spettro di frequenze molto largo ($[2, 66]$ GHz), permette teoricamente collegamenti con un bitrate fino a 74 Mbps e può essere utilizzato anche su distanze molto grandi (chilometri). Una delle sue caratteristiche più importanti è quella di offre il controllo della qualità del servizio a livello MAC, oltre ad offrire anche una modalità ad-hoc (mesh). Era pertanto una tecnologia con delle grandi potenzialità, sopperita però perché rappresentava \textquotedblleft minacce" per i gestori telefonici, quindi per motivi prettamente commerciali.
+
+La tecnologia \textit{bluetooth} è utilizzata per reti di piccole dimensioni, utilizzate per connettere tra di loro apparati dati (inizialmente auricolari, poi cellulari, stampanti, $\dots$). Opera in frequenze di 2.4 GHz, il suo bitrate massimo è 720 kbps e funziona normalmente in modalità ad-hoc. Per quanto riguarda le distanze vi sono tre categorie di potenza, che permettono un raggio di copertura che varia dai 10 ai 100 metri. Sostanzialmente bluetooth è uno standard che funziona bene solo \textquotedblleft su carta", in realtà non offre grandi prestazioni ed è molto difficile da utilizzare perché il proprio standard si è evoluto \textquotedblleft a pezzi"; si è sviluppato cioè nel corso degli anni per offrire nuovi servizi (e al tempo stesso essere retrocompatibile): questo ha reso lo standard molto complesso. Oggi è utilizzato addirittura per lo stack protocollare TCP/IP: questo standard è nato semplicemente per far comunicare un telefono con un auricolare. Attualmente, al contrario di quando fu ideato, lo standard bluetooth non può più essere considerato PAN in senso stretto.
+
+Altre tecnologie wireless sono: \textit{hyperlan2}, uno standard ETSI per reti locali wireless, con caratteristiche molto simili all'802.11, in realtà mai sviluppato e sopperito fin dall'inizio, e \textit{reti cellulari} come GSM, GPRS, UMTS $\dots$
+
+Le reti, in generale, sono di tipo \textit{monoservizio} e \textit{multiservizio}. Le prime sono progettate per fornire un solo servizio all'utente (e.g. GSM, telegrafo, telefonia classica, Internet (nasce per trasmettere dati)). Le seconde, dette anche \textit{reti integrate nei servizi}, sono progettate per fornire più servizi agli utenti (e.g. ISDN e broadband ISDN -- oramai non più utilizzate); questo tipo di rete non ha mai avuto un grande successo per il semplice motivo che, essendo complesse, per il loro sviluppo servono diversi anni, dunque l'analisi dei requisiti effettuata in un primo momento del progetto non corrisponderà più alle esigenze che si vogliono soddisfare nel momento in cui questa diventa disponibile ed utilizzabile.
+
+\section{Il protocollo 802.11 e Wi-Fi}
+La prima versione dello standard 802.11, con la definizione dello strato MAC e delle caratteristiche di sicurezza, fu rilasciata nel 1996; il bitrate massimo era 2 Mbps. Nel 1999 furono sviluppate le versioni 802.11b, con un bitrate massimo di 11 Mbps, e 802.11a, versione per frequenze di 5 GHz con un bitrate massimo di 54 Mbps. Nel 2004, invece, furono sviluppate le versioni 802.11g, per frequenze di 2.4 GHz con bitrate massimo 54 Mbps, e 802.11i contenente una completa ristrutturazione dello strato di sicurezza. Nel 2007 venne introdotta la versione 802.11n, una versione con tecnologia MIMO (multiple-input multiple-output) che supporta bitrate superiori a 54 Mbps.
+
+Il range di frequenze dello standard 802.11 è $[2.4, 5]$ GHz, il bitrate è circa $[11, 108]$ Mbps effettivi. Il raggio di copertura arriva fino a 50m in ambienti indoor e fino a 300m in ambienti outdoor senza linea di vista, e permette la mobilità.
+
+La differenza sostanziale tra il protocollo 802.11 ed il WiFi è che il primo è uno standard che si occupa dei livelli 6 e 7, mentre il secondo garantisce la compatibilità tra i dispositivi, ai livelli 1 e 2, e lo standard 802.11.
+
+Prima che gli standard 802.11 vengano rilasciati ufficialmente, i maggiori produttori, che formano un consorzio WiFi (detto WiFi Alliance), rilasciano una pre-release e certificazioni sui prodotti hardware. In particolare, il consorzio, per rimediare all'emergenza causata dalle insicurezze riscontrate in tutte le versioni dell'802.11 precedenti alla $i$, anticipa nei propri prodotti una versione incompleta di 802.11i che chiama WPA (Wireless Protected Access). A questa segue WPA2, che corrisponde alla versione aderente a 802.11i. Attualmente esistono molti working group ($j,h,f,\dots$) con lo scopo di arricchire il protocollo con nuove caratteristiche quali QoS, fast handoff, etc. Negli standard vi è quindi sempre una parte resa volutamente \textit{implementation dependent}, che la lo scopo di lasciare parti dello standard libere, in modo che le aziende possano scegliere quali parti dello standard utilizzare o personalizzare e quali no. Questa parte serve sostanzialmente per permettere la competizione tra aziende. Di seguito verrà introdotto il funzionamento di 802.11 nelle versioni precedenti alla $i$.\\
+Nell'802.11 i pacchetti possono essere di tre tipi:
+\begin{itemize}
+	\item \textbf{Management}. Sono tutti i pacchetti che non trasportano dati, ma che vengono utilizzati dalle macchine per gestire il traffico dati. Questi includono pacchetti di autenticazione e deautenticazione, pacchetti di associazione e deassociazione, pacchetti di Beacon (pacchetti inviati continuamente dallo strato fisico contenenti il nome della rete (SSID), vedremo meglio in seguito). I pacchetti di management non prevedono nessuna forma di autenticazione o di cifratura. Il fatto che i pacchetti di autenticazione/deautenticazione non siano cifrati rappresenta una vulnerabilità dello standard (by design).
+	\item \textbf{Control}. Sono tutti i pacchetti che non trasportano dati ma che vengono utilizzati dalle macchine per gestire l'accesso al canale, che avviene normalmente con politiche CSMA/CA. Vi sono quindi pacchetti di RTS/CTS (per risolvere il problema del terminale nascosto), di ACK, etc. Anche i pacchetti di controllo non prevedono nessuna forma di autenticazione o cifratura. Dal momento che i pacchetti di CTS non sono autenticati, un attaccante potrebbe pensare di mandare continuamente questi pacchetti in modo da saturare la banda e bloccare la rete.
+	\item \textbf{Data}. Sono tutti i pacchetti che trasportano il contenuto informativo. Questi pacchetti possono essere cifrati ed autenticati.
+\end{itemize}
+Il \textbf{WEP} (Wired Equivalent Privacy) è l'insieme delle procedure introdotte in 802.11 per garantire privacy e sicurezza nelle comunicazioni, oltre al controllo degli accessi. Lo scopo dichiarato è quello di fornire un livello di sicurezza equivalente a quello di una rete cablata tradizionale. Le macchine appartenenti alla rete hanno tutte una chiave in comune, detta chiave WEP. Il WEP, in particolare, prevede:
+\begin{itemize}
+	\item Una \textit{unica chiave condivisa} tra tutte le macchine della rete per cifrare il traffico unicast e broadcast. Con questa strategia non esiste un'autenticazione dei pacchetti relativa alla singola macchina (non si sa chi ha effettuato l'accesso), non esistono comunicazioni segrete tra due singole macchine, non esiste un meccanismo automatico di \textit{refresh} della chiave ed un eventuale sniffing dei dati da parte di altri membri della rete è molto semplice.
+	\item Una \textit{fase di autenticazione} in cui una nuova macchina dimostra di possedere la chiave. L'autenticazione è di tipo \textit{shared key}: il client di deve autenticare verso l'access point dimostrando di possedere la chiave segreta. Si noti che in sistemi più robusti (come WPA) la cifratura delle informazioni non è basata sulla chiave condivisa: questa viene infatti usata solamente per negoziare un'altra chiave che servirà a cifrare i dati. Quindi:
+	\begin{enumerate}
+		\item Il client chiede all'AP di autenticarsi.
+		\item L'AP risponde con un \textit{challenge text}.
+		\item Il client risponde con il \textit{challenge text cifrato}.
+	\end{enumerate}
+	Questa idea non è molto buona: un attaccante potrebbe intercettare challenge in chiaro e challenge cifrato da cui è possibile risalire alla chiave.\\
+	In questa fase i pacchetti sono di tipo management, dunque non sono né autenticati né cifrarti. In pratica viene cifrato solo il campo di payload del pacchetto, con un algoritmo di cifratura di tipo stream. La procedura è molto veloce e quindi pensata per poter essere utilizzata come procedura di handoff rapido anche tra più AP. L'AP in questo caso è l'unico elemento che decide chi far entrare nella rete: la gestione degli accessi è quindi tutta sull'AP stesso. Per reti costituite da più AP la gestione diventa molto complessa o del tutto statica.
+	\item Un \textit{algoritmo di cifratura} dei pacchetti di tipo \textit{stream}, l'RC4, che tuttavia è un algoritmo estremamente debole.
+\end{itemize}
+Gli algoritmi \textit{stream} cifrano il contenuto in chiaro bit per bit, e non a blocchi di dimensione fissa. In pratica, a partire da un segreto, si genera un vettore di lunghezza variabile di dati pseudocasuali (\textit{keystream}). Per rendere unico ogni pacchetto si aggiunge al segreto un vettore di inizializzazione (IV), dunque il keystream dipende dalla coppia (segreto, IV). Si effettua infine uno XOR logico tra il keystream e l'informazione da cifrare. Uno schema logico dell'algoritmo è riportato in Figura \ref{graph:stream-encryption}.\\
+Gli algoritmi di tipo stream sono molto veloci e facili da implementare; riutilizzare più volte lo stesso IV significa ripetere due volte lo stesso keystream, dunque se si è a conoscenza di uno dei due pacchetti in chiaro è possibile ricavare anche il secondo. Dunque, lo stesso keystream non deve essere mai utilizzato.
+\begin{figure}[htbp]
+	\centering
+	\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=5.8cm,
+	semithick, scale = 0.6, transform shape]
+	
+		\node[rect,align=center] (1) {Generatore di numeri\\pseudocasuali};
+		\node[] (2) [left of=1] {($K$, IV)};
+		\node[state] (3) [right of=1] {$+$};
+		\node[] (4) [above of=3,yshift=-3cm] {Testo in chiaro};
+		\node[] (5) [right of=3,xshift=-2cm] {Testo cifrato};
+		
+		\path (2) edge node {} (1)
+		(1) edge node {Keystream} (3)
+		(4) edge node {} (3)
+		(3) edge node {} (5);
+	\end{tikzpicture}
+	\caption{Algoritmo di cifratura di tipo stream. Il simbolo \textquotedblleft $+$" rappresenta l'operatore logico XOR.}
+	\label{graph:stream-encryption}
+\end{figure}\\
+Vediamo adesso la procedura di cifratura con RC4 (Figura \ref{img:RC4-encryption}):
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale = 0.5]{images/RC4-encryption}
+	\caption{Procedura di encryption con RC4.}
+	\label{img:RC4-encryption}
+\end{figure}
+\begin{enumerate}
+	\item Si concatena la chiave WEP con il IV per generare il \textit{seed}.
+	\item Il blocco WEP PRNG (Pseudo Random Number Generator, basato su RC4) genera un \textit{keystream} a partire dal \textit{seed}.
+	\item Sul \textit{plaintext} (testo in chiaro) si applica un algoritmo di \textit{error detection} (CRC-32) ed il CRC viene concatenato al pacchetto in chiaro.
+	\item Si effettua uno XOR con la chiave.
+	\item Si trasmette il pacchetto con l'IV nell'header (non cifrato) ed il payload cifrato.
+\end{enumerate}
+RC4 utilizza in 802.11b chiavi a 40 bit. In generale un buon (pseudo) random generator è un algoritmo che, a partire dal seed, ad ogni passo genera uno o più numeri nel modo più impredicibile possibile, dovrebbe avvicinarsi cioè al \textit{rumore bianco}. Si noti che l'impredicibilità assoluta è impossibile. Vediamo dunque la procedura di decifratura (Figura \ref{img:RC4-decryption}):
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale = 0.5]{images/RC4-decryption}
+	\caption{Procedura di decryption con RC4.}
+	\label{img:RC4-decryption}
+\end{figure}
+\begin{enumerate}
+	\item Dal pacchetto si estrae l'IV ed il payload cifrato.
+	\item Dall'IV e dalla chiave WEP si ricrea il \textit{keystream}.
+	\item Si effettua uno XOR tra il \textit{keystream} ed il payload ottenendo il payload in chiaro.
+	\item Si separa il payload dal CRC e si ricalcola il CRC per verificare l'integrità.
+\end{enumerate}
+Cifrare anche il CRC significa che se un attaccante non conosce la chiave di cifratura può modificare il pacchetto, ma non può rendere coerente il CRC. Così facendo si ottiene la sicurezza dell'integrità delle informazioni. Vediamo quindi come viene effettuata l'\textit{autenticazione dei frame}:
+\begin{enumerate}
+	\item Si calcola il CRC sul payload in chiaro.
+	\item Si concatena il CRC al payload in chiaro e si effettua uno XOR tra il \textit{keystream} ed il payload ottenendo il payload cifrato.
+	\item Si trasmette il pacchetto (header in chiaro, payload cifrato).
+	\item Una volta ricevuto il pacchetto, si estrae l'IV dall'header e si utilizza per ricalcolare il \textit{keystream} (attraverso la chiave WPA); si esegue uno XOR con il pacchetto e si ricava il payload in chiaro concatenato al CRC.
+	\item A questo punto si ricalcola il CRC dal payload in chiaro e si confronta con quello ricevuto. Se i due valori coincidono, la trasmissione è avvenuta senza manomissioni.
+\end{enumerate}
+Così facendo otteniamo un controllo di integrità sul payload.
+
+Facciamo adesso alcune precisazioni e note sul WEP. (a) L'autenticazione dei pacchetti non utilizza algoritmi a chiave pubblica/privata; dovrebbe invece esserci sempre un segreto condiviso in precedenza, dunque un canale sicuro. (b) Alcuni AP implementano un filtro sugli indirizzi MAC da far accedere alla rete per evitare accessi indesiderati. (c) Non esiste controllo di unicità dei pacchetti, due pacchetti possono essere identici. (d) Non esiste controllo di sequenza dei pacchetti, il valore di IV viene deciso dagli apparati senza una politica definita (e.g. randomica, incrementale, $\dots$). Un attaccante può ripetere un pacchetto anche senza conoscerne il significato: i protocolli di livello superiore hanno il compito di gestire i dati, accettandoli o rifiutandoli.
+
+Vediamo ora nel dettaglio l'ingresso e l'uscita dalla rete (cfr. macchina a stati in Figura \ref{img:802_11-state-machine}). Per quanto riguarda l'\textit{associazione} (richiesta di voler dialogare con l'AP), una volta autenticato, il client deve notificare all'access point che vuole entrare nella rete; questo avviene semplicemente in due fasi: (1) Il client chiede di associarsi, (2) L'access point invia una conferma. Per quanto riguarda, invece, l'uscita dalla rete sono previste le fasi di \textit{deautenticazione} e \textit{deassociazione}; per deautenticare il client, l'AP invia un messaggio di deautenticazione ed il client deve ripetere l'autenticazione, mentre per deassociare un client, l'AP invia un messaggio di deassociazione e il client deve ripetere l'associazione. Se il client riceve un messaggio di deautenticazione quando è anche associato, allora dovrà ripetere entrambe le fasi. Si noti che questi sono tutti pacchetti di management.
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale = 0.3]{images/802_11-state-machine}
+	\caption{Macchina a stati per l'ingresso e l'uscita dalla rete del protocollo 802.11.}
+	\label{img:802_11-state-machine}
+\end{figure}\\
+Per quanto riguarda la tecnica di \textit{accesso al canale}, l'802.11 prevede che i client della LAN condividano lo stesso canale fisico con una politica di accesso CSMA/CA. In modalità infrastructure, l'AP si comporta da centro stella, dunque tutto il traffico viene inviato all'AP che, a sua volta, lo redirige verso ai client. Nell'intestazione di ogni pacchetti ACK/RTS è presente un campo \textit{duration} in cui il client specifica un periodo di tempo durante il quale il canale è prenotato: in tale periodo il canale non viene utilizzato da altri client. Un problema molto noto di questo tipo di accesso è il \textit{problema del terminale nascosto}. Si consideri la situazione rappresentata in Figura \ref{img:hidden-node-problem}.
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale = 0.5]{images/hidden-node-problem}
+	\caption{Problema del terminale nascosto.}
+	\label{img:hidden-node-problem}
+\end{figure}\\
+Le ellissi rappresentano le aree di copertura tra l'AP ed i client $C_1$ e $C_2$. In sostanza, l'AP può comunicare con entrambi i client $C_1$ e $C_2$, ma qualcosa (ad esempio la distanza) impedisce a $C_1$ e $C_2$ di comunicare direttamente tra loro e quindi anche di poter rilevare (\textit{sensing}) la portante trasmessa dall'altro client verso l'AP. In questo contesto è allora possibile che si verifichino collisioni in ricezione sull'AP quando entrambi i client $C_1$ e $C_2$, rilevando il canale libero, trasmettono contemporaneamente verso l'AP. Per evitare collisioni, lo standard IEEE 802.11 permette di usare un meccanismo con il quale la stazione, prima di inviare un frame, richiede la trasmissione di speciali piccoli pacchetti:
+\begin{itemize}
+	\item \textbf{RTS} (Request To Send): oltre a riservarsi il mezzo, fa tacere qualsiasi stazione che lo sente.
+	\item \textbf{CTS} (Clear To Send): viene inviato dall'AP in risposta all'RTS, e ha il compito di far tacere le stazioni nell'immediata vicinanza.
+\end{itemize}
+Dunque, se ad esempio $C_1$ vuole trasmettere all'AP, invia un messaggio RTS. Se l'AP non sta comunicando con nessun altro nodo, allora invia un messaggio CTS in cui dà il permesso a $C_1$ di trasmettere, ed a tutti gli altri nodi (nel caso in Figura \ref{img:hidden-node-problem} solo $C_2$) indica che in quel momento sta effettuando una comunicazione con un altro nodo.
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale = 0.4]{images/802_11-channels}
+	\caption{Canali del protocollo 802.11.}
+	\label{img:802_11-channels}
+\end{figure}\\
+A scopo informativo, in Figura \ref{img:802_11-channels} sono riportate le bande di frequenza dei 13 canali sulle quali lavora il protocollo 802.11. Notiamo che vi sono parziali sovrapposizioni tra i canali (in termini di frequenze fuori dal centrobanda) e queste possono causare dei disturbi. In pratica, anche se viene utilizzato soltanto il centrobanda, è impossibile realizzare dei filtri passabanda che taglino precisamente un intervallo di frequenze (cioè dei filtri ideali); allontanandosi dal centrobanda, quindi, il segnale è attenuato progressivamente ma non è esattamente nullo. Questo problema viene risolto semplicemente utilizzando canali che non presentano overlap, ad esempio 1, 6 e 11.
+
+Facciamo adesso una precisazione sui beacon frame. Il beacon è un pacchetto che viene inviato dagli AP per segnalare la propria presenza. I contenuti più importanti del Beacon Frame sono: la \textit{modalità} (ad-hoc o infrastructure), \textit{SSID} (cioè il nome dell'AP; è necessario specificarlo per entrare nella rete durante la fase dell'associazione) e \textit{privacy} (definisce se l'AP supporta WEP o meno). Allo stato attuale le reti ad-hoc sono poco utilizzate.
+
+Il WDS (Wireless Distribution System) è un sistema di scambio di dati tra AP. Quando gli APs vogliono fare routing dei pacchetti tra di loro, per unire due reti distinte fisicamente in una unica rete logica devono utilizzare le interfacce WDS. Sulle interfacce WDS si può utilizzare WEP, ma non esiste associazione o autenticazione. L'utilizzo di interfacce WDS tuttavia sottrae banda per il servizio della rete infrastructure.
+
+\section{Insicurezze del protocollo 802.11}
+Le insicurezze che vedremo sono relative al protocollo 802.11 nelle versioni a/b/g. Alcune di queste non riguardano gli algoritmi crittografici utilizzati, quindi si ritrovano anche nella versione 802.11i.
+
+Gli attacchi \textit{Denial of Service} (DoS) sono attacchi mirati all'interruzione dell'erogazione del servizio. Se il servizio è l'accesso stesso Internet (ad esempio un hotspot che offre connettività), il danno in termini economici è rilevante; esistono infatti situazioni Mission Critical in cui non è possibile permettersi di non avere connettività (e.g. scadenze produttive, reti di emergenza, etc.) e l'interruzione del servizio rende all'utente una generale impressione di inaffidabilità, dunque lo allontana. Le reti Wi-Fi in generale non dovrebbero essere usate in situazioni Mission Critical.
