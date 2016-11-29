@@ -21,10 +21,12 @@
 \usepackage{pgf}
 \usepackage{pgfplots}
 \usepackage{tikz}
-\usetikzlibrary{arrows,shapes.geometric,automata}
+\usetikzlibrary{arrows,shapes.geometric,automata,positioning}
 \tikzstyle{rect} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm, text centered, draw=black]
 \tikzstyle{process} = [rectangle, minimum width=3cm, minimum height=1cm, text centered, draw=black]
 \tikzstyle{arrow} = [thick,->,>=stealth]
+\tikzstyle{phase} = [rounded corners, text centered, draw=none, fill=none]
+\tikzstyle{undirectedarrow} = [thick,-,>=stealth]
 \usetikzlibrary{calc}
 \usepackage{bytefield}
 \newcommand{\shellcmd}[1]{\\\indent\indent\texttt{\footnotesize\$ #1}\\}
