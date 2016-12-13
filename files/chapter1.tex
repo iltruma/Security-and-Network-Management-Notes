@@ -1,5 +1,5 @@
 \chapter{Introduzione}
-Il concetto di \textit{sicurezza} (\textit{security}) può essere brevemente descritto come la protezione delle informazioni di un sistema da furti o dal danneggiamento hardware o software del sistema stesso. Le principali proprietà della sicurezza sono:
+Il concetto di \textit{sicurezza} (\textit{security}) può essere brevemente descritto come la protezione delle informazioni di un sistema da furti o dal danneggiamento hardware o software del sistema stesso. Le principali proprietà della sicurezza sono tre:
 \begin{itemize}
 	\item \textbf{Confidenzialità}. Garantire che l'informazione non sia accessibile da persone non autorizzate.
 	\item \textbf{Integrità}. Garantire che l'informazione non sia alterata da persone non autorizzate in un modo che non è rilevabile dagli utenti autorizzati.
@@ -95,7 +95,7 @@ Per definire in modo completo la “sicurezza” è infine indispensabile il \te
 In alcuni casi è plausibile parlare di attacchi “limitati”, dove l'attaccante può alternativamente:
 \begin{itemize}
 	\item inviare ma non ricevere [tutto] (\textbf{attacchi attivi}, bind o meno); con questo tipo di attacco si mandano dei pacchetti in rete, ma potrebbe essere persa di vista la comunicazione tra gli endpoints. Alcuni esempi sono: replay attacks, message insertion (aggiunta di contenuto nei messaggi), message deletion, message modification e man-in-the-middle (l'attaccante si pone nel canale di comunicazione tra endpoints svolgendo così il ruolo di proxy, ma allo stesso tempo può manipolare i messaggi a suo piacimento).
-	\item ricevere ma non inviare (\textbf{attacchi passivi}). Questo è un tipo di attacco difficile da fare senza essere notati: le reti switched, avendo capacità di trasmissione di $\approx$ 1Gb/s, eventuali flussi massicci di dati rallenterebbero sicuramente la velocità di trasmissione nella rete. Questo perché in genere vengono catturati \textit{tutti} i pacchetti che transitano da/verso uno o più host al fine effettuare alcune operazioni come violazione di confidenzialità, password sniffing oppure ofline cryptographic analysis.
+	\item ricevere ma non inviare (\textbf{attacchi passivi}). Questo è un tipo di attacco difficile da fare senza essere notati: le reti switched, avendo capacità di trasmissione di $\approx$ 1Gb/s, eventuali flussi massicci di dati rallenterebbero sicuramente la velocità di trasmissione nella rete. Questo perché in genere vengono catturati \textit{tutti} i pacchetti che transitano da/verso uno o più host al fine effettuare alcune operazioni come violazione di confidenzialità, password sniffing oppure offline cryptographic analysis.
 \end{itemize}
 Un altro elemento sul quale bisogna porre l'attenzione è la topologia della rete. Ai fini della sicurezza è necessario conoscere sia la topologia fisica, sia quella IP. L'idea è quella di controllare il percorso delle informazioni per cercare di capire se queste passano per un attaccante. È assolutamente sbagliato assumere che l'attaccante possa inviare e ricevere pacchetti con la stessa facilità.\\
 Gli attacchi si possono dividere in:
