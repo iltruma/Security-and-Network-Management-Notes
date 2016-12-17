@@ -261,9 +261,9 @@ Così facendo tutta la parte della query dopo il simbolo \texttt{--} non viene c
 		\hline
 	\end{tabular}
 \end{figure}\\
-utilizzando il comando \texttt{UNION} è possibile effettuare query su tabelle diverse. Infatti, ponendo \texttt{user=' UNION SELECT value FROM houses WHERE owner=Alice;--}, la query diventa
+utilizzando il comando \texttt{UNION} è possibile effettuare query su tabelle diverse. Infatti, ponendo \texttt{user=' UNION SELECT value FROM houses WHERE owner=Alice;-- }, la query diventa
 \begin{lstlisting}[language=sql,basicstyle=\scriptsize\ttfamily]
-"SELECT secret FROM userdb WHERE user =' UNION SELECT value FROM houses WHERE owner=Alice;--"
+"SELECT secret FROM userdb WHERE user =' UNION SELECT value FROM houses WHERE owner=Alice;-- "
 \end{lstlisting}
 La prima parte della query fallisce, ma la seconda parte effettua una richiesta su una seconda tabella e viene restituito il risultato. Come ultima cosa vediamo come fare per sapere se vi sono altre tabelle; di seguito sono riportati i valori che \texttt{user} dovrebbe assumere per questo scopo:
 \begin{lstlisting}[language=sql]
@@ -384,9 +384,9 @@ Vediamo tre per pericoli a cui è esposto AJAX:
 	\item \textbf{Cache client-side}. AJAX salva in cache locale molti dati relativi alla sessione; è necessario dunque porre un'attenzione particolare verso altri programmi che possono manipolare questi dati.
 	\item \textbf{Mashups}. Il web 2.0 è fatto di integrazione di contenuti prodotti dagli utenti e da altre sorgenti aggregate nella stessa pagina. Un aggregatore di servizi mette insieme oggetti che provengono da indirizzi IP e domini diversi. È quindi molto difficile tracciare tutte le sorgenti che contribuiscono ad una stessa pagina e filtrarle in modo che non vi caschino anche applicazioni non previste (vedi XSS).
 \end{enumerate}
-Per rendere sicuro AJAX, dunque, i controlli dovrebbero essere effettuati client-side e la cache di AJAX dovrebbe essere in qualche modo protetta per evitare che l'attaccante recuperi in qualche modo i dati sensibili al suo interno. Si noti che i dati nella cache vengono trasferiti prima di qualsiasi richiesta da parte dell'utente.
+Per rendere sicuro AJAX, dunque, i controlli dovrebbero essere effettuati server-side e la cache di AJAX dovrebbe essere in qualche modo protetta per evitare che l'attaccante recuperi in qualche modo i dati sensibili al suo interno. Si noti che i dati nella cache vengono trasferiti prima di qualsiasi richiesta da parte dell'utente.
 
-Vediamo di seguito gli attacchi alle applicazioni.
+\noindent Vediamo di seguito gli attacchi alle applicazioni.
 
 \subsubsection{Buffer overflow}
 Il buffer overflow è una vulnerabilità in un programma che permette ad un attaccante di far eseguire del codice arbitrario all'applicazione vulnerabile; nel peggiore dei casi è svolto da remoto. Lo scopo è quello di riuscire ad eseguire dei comandi che altrimenti l'attaccante non potrebbe eseguire sulla macchina remota. I buffer overflow sono causati da errori di programmazione di chi scrive i programmi e sono di gran lunga la causa più frequente di intrusioni. Consideriamo un programma in linguaggio C come questo:

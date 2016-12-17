@@ -87,7 +87,17 @@ Il trasferimento delle informazioni di utente, di segnalazione e di gestione pu�
 \begin{figure}[htbp]
 	\centering
 	\includegraphics[scale = 0.55]{images/ISO-OSI}
-	\caption{Modello ISO/OSI}
+	\caption{Modello ISO/OSI.}
 	\label{img:ISO-OSI}
 \end{figure}\\
-In Figura \ref{img:ISO-OSI} è rappresentato il modello ISO/OSI. È importante sapere due concetti riguardanti questo modello: \textit{information hiding} (non esporre l'implementazione, ma solo un servizio) e \textit{separation of concerns} (non duplicare le funzionalità). La maggior parte dei problemi odierni del TCP/IP deriva dalla violazione di questi due concetti.
+In Figura \ref{img:ISO-OSI} è rappresentato il modello ISO/OSI. È importante sapere due concetti riguardanti questo modello: \textit{information hiding} (non esporre l'implementazione, ma solo un servizio) e \textit{separation of concerns} (non duplicare le funzionalità). La maggior parte dei problemi odierni del TCP/IP deriva dalla violazione di questi due concetti. Un problema fondamentale del modello ISO/OSI è dovuto al fatto che il traffico utente, di segnalazione e di controllo non possono separati e non vi è possibilità di fare il \textit{cross layer}, ovvero saltare da un layer all'altro. Un esempio di pila protocollare che permette di ovviare a questi problemi è una pila tridimensionale (e.g. ATM): a fianco dei layers dati vi è un unico layer di segnalazione, dietro ai quali vi è un unico layer di controllo.\\
+Le reti wireless e wired che prenderemo in considerazione nel seguito sono 802.3 (ethernet), 802.11 (WiFi), 802.1 e LTE.
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale = 0.55]{images/network-devices}
+	\caption{Dispositivi di rete.}
+	\label{img:network-devices}
+\end{figure}\\
+I dispositivi che operano nelle reti ed in Internet (Figura \ref{img:network-devices}) sono differenziati in base al livello protocollare in cui operano. A livello fisico abbiamo \textit{repeater} (due porte) e \textit{hub} (più porte). A livello collegamento abbiamo i \textit{bridge} (connettono tecnologie diverse ma compatibili usando il Logical Link Control e cambiando un frame da un tipo ad un altro purché compatibili -- e.g. frame 802.11 in frame ethernet) e gli \textit{switch} (connette tecnologie uguali, instradando i pacchetti verso l'indirizzo desiderato). A livello rete abbiamo i \textit{router}, dispositivi che lavorano a livello di indirizzi IP e che decidono l'instradamento basandosi su tabelle e protocolli di apprendimento delle route. Ai livelli superiori si parla di \textit{gateway}. Il fatto che questi dispositivi siano dotati di \textquotedblleft intelligenza" (i.e. managed) non significa che operino a livelli superiori a quello di riferimento (e.g. uno switch managed opera sempre a livello 2, anche se presenta un'interfaccia di gestione web). Dato che il TCP/IP occupa i livelli 3 e 4, in Internet vi sono solo routers e gateways.
+
+\section{Internet}
