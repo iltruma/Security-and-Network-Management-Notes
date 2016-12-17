@@ -100,7 +100,7 @@ Il port binding lo possiamo suddividere in tre categorie:
 Per il timer abbiamo quattro politiche di aggiornamento:
 \begin{itemize}
 	\item \textbf{Bidirectional}. Il timer viene aggiornato dai pacchetti che transitano in entrambi i sensi.
-	\item \textbf{Outbound}. Il timer viene aggiornato solo dai pacchetti che transitano dall'interno verso l'esterno. L'aspetto negativo è che l'host interno deve rinnovarlo periodicamente, poiché se quest'ultimo invia solamente il timer scade; è necessario dunque utilizzare un \textit{keep-alive}. Inoltre il timer potrebbe essere per-session o per-binding, nel caso di riuso del binding per più sessioni.
+	\item \textbf{Outbound}. Il timer viene aggiornato solo dai pacchetti che transitano dall'interno verso l'esterno. L'aspetto negativo è che l'host interno deve rinnovarlo periodicamente, poiché se quest'ultimo riceve solamente il timer scade; è necessario dunque utilizzare un \textit{keep-alive}. Inoltre il timer potrebbe essere per-session o per-binding, nel caso di riuso del binding per più sessioni.
 	\item \textbf{Inbound}. Il timer viene aggiornato solo dai pacchetti che transitano dall'esterno verso l'interno. Anche in questo caso è necessario un keep-alive.
 	\item \textbf{Transport Protocol State}. Si effettua un'inferenza del tempo di vita/timing basandosi su informazioni di livello trasporto. All'atto pratico risulta molto difficile da programmare ed eventuali bug potrebbero dar luogo a vulnerabilità utilizzabili per attacchi di tipo DoS. Il problema è simile a quello del layer 7 del firewall (L7 filtering).
 \end{itemize}
@@ -108,9 +108,9 @@ Vediamo, infine, una classificazione precisa per il filtering esterno:
 \begin{itemize}
 	\item \textbf{Endpoint independent}. Il filter non filtra o scarta i pacchetti: è come un \textit{Full Cone NAT}.
 	
-	\item \textbf{Endpoint address dependent}. Il filter filtra i pacchetti che non provengono dall'IP originario del binding: è come un \textit{Restricted Cone NAT}.
+	\item \textbf{Endpoint address dependent}. Il filter filtra i pacchetti che non provengono dall'IP destinatario del binding: è come un \textit{Restricted Cone NAT}.
 	
-	\item \textbf{Endpoint address and port dependent}. Il filter filtra i pacchetti che non provengono dall'IP/porta originario del binding: è come un \textit{Symmetric NAT} od un \textit{Port Restricted Cone NAT}.
+	\item \textbf{Endpoint address and port dependent}. Il filter filtra i pacchetti che non provengono dall'IP/porta destinatario del binding: è come un \textit{Symmetric NAT} od un \textit{Port Restricted Cone NAT}.
 \end{itemize}
 Si noti che il filter potrebbe avere un timer separato simile a quello del binding (i timer possono essere in qualche modo correlati).
 
