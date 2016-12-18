@@ -101,3 +101,105 @@ Le reti wireless e wired che prenderemo in considerazione nel seguito sono 802.3
 I dispositivi che operano nelle reti ed in Internet (Figura \ref{img:network-devices}) sono differenziati in base al livello protocollare in cui operano. A livello fisico abbiamo \textit{repeater} (due porte) e \textit{hub} (più porte). A livello collegamento abbiamo i \textit{bridge} (connettono tecnologie diverse ma compatibili usando il Logical Link Control e cambiando un frame da un tipo ad un altro purché compatibili -- e.g. frame 802.11 in frame ethernet) e gli \textit{switch} (connette tecnologie uguali, instradando i pacchetti verso l'indirizzo desiderato). A livello rete abbiamo i \textit{router}, dispositivi che lavorano a livello di indirizzi IP e che decidono l'instradamento basandosi su tabelle e protocolli di apprendimento delle route. Ai livelli superiori si parla di \textit{gateway}. Il fatto che questi dispositivi siano dotati di \textquotedblleft intelligenza" (i.e. managed) non significa che operino a livelli superiori a quello di riferimento (e.g. uno switch managed opera sempre a livello 2, anche se presenta un'interfaccia di gestione web). Dato che il TCP/IP occupa i livelli 3 e 4, in Internet vi sono solo routers e gateways.
 
 \section{Internet}
+Internet non è nata un giorno a caso: la sua nascita è stata il risultato di un processo lungo, lento e contrastato; se vogliamo capire cos'è e come sopravvive, è fondamentale capire come e perché si è venuta a creare. Le idee rivoluzionarie vennero agli inizi degli anni '60 soprattutto da due persone: Leonard Kleinrock e J.C.R. Licklider. Il primo introdusse le comunicazioni a pacchetto in un momento in cui era norma fare delle comunicazioni a messaggio (messaggi lunghi); il secondo, anche se meno famoso, diede dei contributi notevoli soprattutto nell'ambito delle comunicazioni spaziali. Internet \textquotedblleft nasce" quindi intorno agli anni '60 grazie alle idee di Kleinrock e Licklider, poi finanziate in modo massiccio dal Dipartimento della Difesa Americano (DoD); nasce dunque come rete finanziata dai militari, ma essendo un progetto di ricerca venne reso aperto. Il \textit{come} ed il \textit{perché} Internet abbia battuto la concorrenza di tutti i modelli di rete presenti al tempo, è un problema complesso che coinvolge \textit{fattori economici}, \textit{fattori tecnologici}, \textit{facilità di utilizzo}, \textit{utilizzatori finali} e \textit{politica}.
+
+\noindent Nella storia di Internet troviamo i pattern fondamentali di una rete di telecomunicazioni:
+\begin{enumerate}
+	\item \textit{Target} (user-driven o provider-driven). Normalmente quando si crea una rete vi sono uno o più soggetti che effettuano la standardizzazione, un provider che costruisce la rete e degli utenti che la utilizzano; deve esserci inoltre un \textit{business model} che prevede un \textit{investimento} ed un \textit{ritorno di investimento} dopo $x$ anni. In Internet questo modello si ribalta perché nasce da un progetto di ricerca (che serve alla ricerca), e non è mirato ad un ritorno di investimento.
+	\item \textit{Finanziamento dello startup}. Successivamente Internet prese piede ed il Dipartimento della Difesa Americano decise di tagliare i fondi poiché gli Internet Service Provider erano in grado di essere autonomi.
+	\item \textit{Riposizionamento del target}. Internet nacque puramente come una rete dati e nel corso degli anni si è evoluta per avere protocolli più sicuri ed esigenti, per supportare le esigenze degli utenti.
+	\item \textit{Concorrenza da parte di altri}. Vi è stata ed è tuttora presente una concorrenza a livello protocollare, di proposte (e.g. la \textquotedblleft guerra dei browser", modifiche proposte all'HTTP, ...); più precisamente vi è una concorrenza riguardante i modelli di rete ed i modelli di business.
+	\item \textit{Evoluzione tecnologia dei servizi}.
+\end{enumerate}
+Fino alla fine degli anni '70 Internet vide un'evoluzione tecnologica \textquotedblleft di base" ed una concorrenza da parte delle reti a \textit{modello verticale}. Una rete a modello verticale è una rete studiata per trasportare uno o più servizi, la cui evoluzione è conseguente ai servizi stessi; nella pratica si hanno dispositivi ed un'infrastruttura che funzionano solo se prodotti dalla stessa azienda, quindi solo se hanno un preciso modello proprietario. In una rete verticale non vi è una separazione netta tra il fornitore dei servizi e quello del trasporto. Internet è un \textit{modello orizzontale}: si fornisce una serie di protocolli che (by design) sono progettati per essere pronti all'utilizzo o, alternativamente, per essere estesi utilizzando protocolli già esistenti o creandone dei nuovi. Negli anni '80-'90 vi fu l'apertura dei mass-market (passaggio da rete di ricerca a rete commerciale), lo sviluppo dei servizi, la concorrenza sui servizi e, conseguentemente, sulla rete stessa. Allo stato attuale vi sono dei segnali di ritorno a reti verticali, che potrebbero causare la fine della rete aperta.
+
+Internet è uno dei rarissimi esempi di rete nella quale vi è una separazione quasi perfetta tra fornitori di servizi e quelli del trasporto; questo è dovuto alla sua origine \textquotedblleft accademica" ed al fatto che non sia nata per vendere un servizio. Le caratteristiche principali di Internet sono le seguenti:
+\begin{itemize}
+	\item È basata sui protocolli TCP/IP,
+	\item Comprende anche molti altri protocolli (UDP, ICMP, ARP, RIP, OSPF, protocolli di livello applicativo...), e formati (RFC 822, MIME...),
+	\item È una rete di \textquotedblleft sotto-reti" che collega più di $110\,000$ sotto-reti con più di 50 milioni di calcolatori,
+	\item È standardizzata con RFC (Request For Comment),
+	\item I collegamenti fisici tra host e router sono basati su: LAN, MAN, canali punto-punto in fibra od in cavo coassiale, reti X.25, ISDN, ponti radio, Frame Relay, ATM, SLIP, PPP, il tutto in un sistema aperto,
+	\item Esistono realizzazioni TCP/IP anche per reti non standard.
+\end{itemize}
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale = 0.3]{images/ascore-2015}
+	\caption{Topologia della rete Internet riguardante la distribuzione di link tra Autonomous System (AS) (2015).}
+	\label{img:ascore-2015}
+\end{figure}
+In Figura \ref{img:ascore-2015} è rappresentata la distribuzione mondiale dei link tra AS (un blocco di indirizzi IP, un ISP, ...), riguardante sia IPv4 sia IPv6; attualmente la crescita di IPv6 dipende quasi interamente dagli Internet Service Provider. Quando le due mappe saranno pressoché uguali, IPv6 sarà ad un buon livello della propria diffusione e sarà possibile iniziare ad eliminare IPv4.\\
+Fissiamo la terminologia che useremo d'ora in avanti: \textit{subnet} e \textit{Autonomous System} (AS). Una \textit{subnet} è un segmento di rete basata su TCP/IP delimitato dai suoi confini di routing. È identificabile a livello rete da una coppia Indirizzo/Subnet Mask, oppure da un indirizzo espresso secondo notazione CIDR (in IPv6 dai primi 64 bit dell'indirizzo). Si noti che (in IPv4) una subnet finisce con un router: due subnets non possono comunicare se non attraverso un router. Il concetto di \textit{Autonomous System} (AS) è di tipo amministrativo e si riflette solo sul routing: \textquotedblleft\textit{Within the Internet, an autonomous system (AS) is a collection of connected Internet Protocol (IP) routing prefixes under the control of one or more network operators that presents a common, clearly defined routing policy to the Internet (cf. RFC 1930, Section 3)}". In generale all'interno di un AS sono definiti dei protocolli di routing che possono essere diversi da quelli utilizzati all'esterno per connettere più AS; questo perché un amministratore di un AS può decidere in modo arbitrario cosa fare e quali servizi fornire all'interno del proprio AS.\\
+Per quanto riguarda la struttura di Internet, possiamo dire che questa è una inter-rete che consente a sistemi terminali (host) appartenenti a sotto-reti eterogenee di scambiare informazioni. Non possiede un organismo centralizzato dotato di poteri di controllo e lo sviluppo tecnologico si basa sul contributo degli utenti della rete stessa. È basata sulla pila protocollare TCP/IP e l'interconnessione tra sotto-reti è un paradigma fondamentale; non è prevista tuttavia la traduzione dei protocolli. Si noti che vi è una separazione amministrativa e di management tra le diverse sotto-reti che, nel modello, non sono tenute ad una gestione integrata. Per \textquotedblleft sotto-reti" non si intendono le \textquotedblleft subnets", bensì gli \textit{Autonomous System} (AS).\\
+La pila protocollare TCP/IP è situata a livello rete (e superiori): i protocolli TCP/IP assumono che le sotto-reti non eseguano nessuna funzione a parte quella di trasferimento delle unita informative ed esiste la possibilità di duplicazione delle funzioni tra strati TCP/IP e strati protocollari specifici di una sotto-rete. Le entità di Internet sono gli \textit{host} ed i \textit{router/gateway}: gli \textit{host} (L7) sono le sorgenti e le destinazioni delle informazioni univocamente riconosciuti nella rete (tramite indirizzo IP); i \textit{router/gateway} (L3/L4-7) sono i nodi intermedi che instradano i pacchetti IP tra le sotto-reti e possiedono un'interfaccia per ogni sotto-rete a cui sono connessi.\\
+Vediamo brevemente il \textit{principio di interconnessione}. L'host sorgente, dopo aver fatto una traduzione dell'indirizzo alfanumerico in un indirizzo IP:
+\begin{enumerate}
+	\item Forma il pacchetto IP diretto all'host di destinazione (si ha un indirizzo di livello 3).
+	\item Determina se l'host di destinazione si trova sulla sua stessa subnet: se la subnet è la stessa, viene determinato l'indirizzo MAC dell'host di destinazione; se la subnet è diversa, viene determinato l'indirizzo IP e l'indirizzo MAC del router verso cui inviare il pacchetto. In base alle informazioni di livello 3 viene deciso il tipo di routing (diretto o indiretto).
+	\item Consegna il pacchetto alla rete che lo rimanda al destinatario (router o host). L'indirizzo di livello 3 viene tradotto in un indirizzo di livello 2 (MAC).
+\end{enumerate}
+In sostanza un router elabora l'indirizzo dei pacchetti IP e determina, tramite la propria tabella di routing, la subnet in cui si trova l'host di destinazione: se l'host di destinazione si trova in una delle subnets a cui il router è direttamente connesso, affida il pacchetto alla subnet per la consegna, altrimenti determina il router successivo verso il quale instradare il pacchetto. Una subnet, invece, si occupa di trasferire i pacchetti IP incapsulandoli nelle proprie unità dati ed utilizzando i protocolli propri.\\
+In Internet esistono tre livelli di identificazione di un indirizzo:
+\begin{itemize}
+	\item \textbf{Indirizzo MAC}. È l'indirizzo della scheda di rete e solitamente è prefissato.
+	\item \textbf{Indirizzo numerico}. È l'indirizzo IP (e.g. 150.217.8.24) ed è assegnato dal gestore della rete in base al tipo di rete a cui si appartiene (subnet).
+	\item \textbf{Indirizzo alfanumerico}, ad esempio \texttt{lenst.det.unifi.it}. È un indirizzo libero ed è sufficiente che sia mappato in un NameServer.
+\end{itemize}
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale = 0.5]{images/UML-address}
+	\caption{Diagramma UML degli indirizzi in Internet.}
+	\label{img:UML-address}
+\end{figure}
+In Figura \ref{img:UML-address} è riportato un banale diagramma UML che mette in relazione i tre tipi di indirizzi. L'indirizzo IP è l'unico indirizzo assegnato in modo pseudo-geografico perché, dal momento che l'indirizzo IP è necessario per il routing, vi è la necessità di avere in qualche modo un'associazione tra indirizzi e località spaziali. In particolare, un indirizzo IP:
+\begin{itemize}
+	\item Identifica un host; se un host è connesso a più di una rete (multi-homed) avrà un indirizzo IP per ogni rete.
+	\item È unico un tutta la rete ed ha una lunghezza di 32 bit.
+	\item È assegnato ad una macchina su base geografica, ovvero in base alla rete a cui è connessa.
+	\item In origine, nel 1981, era formato da due parti: \textit{net\_id} (identificativo della subnet) e \textit{host\_id} (identificativo dell'host all'interno della subnet). Quindi \textit{IP\_Address} $=$ \textit{net\_id}.\textit{host\_id}.
+\end{itemize}
+Originariamente la divisione tra \textit{net\_id} e \textit{host\_id} non era fissa, ma dipendeva dalla \textit{classe} dell'indirizzo. La struttura di indirizzamento a due livelli gerarchici era sufficiente nella fase iniziale di Internet. Nel 1984 e stato aggiunto un terzo livello gerarchico: il livello di Sottorete (Subnet), in cui si utilizzano alcuni bit della parte di \textit{host\_id} per codificare il \textit{subnet\_id}.
+\begin{figure}[htbp]
+	\centering
+	\begin{bytefield}{32}
+		\bitheader{0,7,8,15,16,23,24,31}\\
+		\begin{rightwordgroup}{Classe A}
+			\bitbox{1}{0} & \bitbox{7}{Net ID} & \bitbox{24}{Subnet ID + Host ID}
+		\end{rightwordgroup} \\
+	\end{bytefield}
+	\begin{bytefield}{32}
+		\begin{rightwordgroup}{Classe B}
+			\bitbox{2}{10} & \bitbox{14}{Net ID} & \bitbox{16}{Subnet ID + Host ID}
+		\end{rightwordgroup} \\
+	\end{bytefield}
+	\begin{bytefield}{32}
+		\begin{rightwordgroup}{Classe C}
+			\bitbox{3}{110} & \bitbox{21}{NetID} & \bitbox{8}{S ID + H ID}
+		\end{rightwordgroup} \\
+	\end{bytefield}
+	\caption{Classi di indirizzi IP.}
+	\label{img:address-classes}
+\end{figure}\\
+In Figura \ref{img:address-classes} sono riportate le tre classi di indirizzi IP. Si noti che il routing avviene sulla NetID. Questo metodo di routing che prevedeva l'utilizzo delle tre classi di indirizzi IP era comodo originariamente, ma si è dimostrato inefficiente in seguito, poiché, così facendo, un router dovrebbe avere una tabella di routing di dimensioni $2^7-2+2^{14}-2+2^{21}-2 = 2\,113\,658$. Venne quindi introdotta la notazione \textbf{CIDR} (\textbf{C}lassless \textbf{I}nter\textbf{D}omain \textbf{R}outing), nella quale gli indirizzi sono nella forma \texttt{x.x.x.x/y} (e.g. 150.217.8.0/24) dove \texttt{y} indica il numero di bit della NetID (contando da sinistra). All'interno dei router il CIDR viene utilizzato in un modo lievemente diverso, ovvero per accorpare linee e ridurre la dimensione della tabella di routing; ad esempio due indirizzi che differiscono di un solo bit vengono \textquotedblleft accorpati" in: 150.217.8.0/24 $+$ 150.217.9.0/24 $=$ 150.217.8.0/23.
+\begin{table}[htbp]
+	\centering
+	\begin{tabular}{|l|l|l|l|l|l|l|l|}
+		\hline
+		\textbf{Destination} & \textbf{Gateway} & \textbf{Genmask} & \textbf{Flags} & \textbf{Metric} & \textbf{Ref} & \textbf{Use} & \textbf{Iface} \\ \hline
+		10.8.0.2 & * & 255.255.255.255 & UH & 0 & 0 & 0 & tun0 \\ \hline
+		10.4.0.1 & * & 255.255.255.255 & UH & 0 & 0 & 0 & tun1 \\ \hline
+		192.168.21.0 & 10.8.0.2 & 255.255.255.0 & UG & 0 & 0 & 0 & tun0 \\ \hline
+		150.217.8.0 & * & 255.255.255.0 & U & 0 & 0 & 0 & eth0 \\ \hline
+		192.168.2.0 & 10.4.0.1 & 255.255.255.0 & UG & 1 & 0 & 0 & tun1 \\ \hline
+		10.8.0.0 & 10.8.0.2 & 255.255.255.0 & UG & 0 & 0 & 0 & tun0 \\ \hline
+		192.168.11.0 & * & 255.255.255.0 & U & 0 & 0 & 0 & eth2 \\ \hline
+		default & detfw.det.unifi & 0.0.0.0 & UG & 0 & 0 & 0 & eth0 \\ \hline
+	\end{tabular}
+	\caption{Esempio di tabella di routing.}
+	\label{tab:routing-table-example}
+\end{table}
+Nella Tabella \ref{tab:routing-table-example} è riportato un esempio reale di tabella di routing; abbiamo una destinazione, un gateway (cioè il next-hop), la genmask (i.e. netmask), dei flag, una metrica (definisce, in caso di due linee totalmente equivalenti quale delle due scegliere), ref e use (servono per vedere quante volte è stata utilizzata la linea e se questa è aggiornata o se è da rimuovere), I(nter)face (indica l'interfaccia utilizzare per inoltrare i pacchetti). Se due destinazioni presentano lo stesso gateway (e la stessa interfaccia), possono essere accorpate modificando la genmask. Per identificare la destinazione di un pacchetto occorre scoprire la entry a massima verosimiglianza. In particolare, indicando con $\&\&$ l'AND logico bit a bit, se
+$$\text{DestIP}\;\&\&\;\text{RTMask}_i == \text{RTDestIP}_i$$
+(RT = Routing Table) allora la entry $i$ ha rank pari al numero di bit a uno della RTMask e si sceglie la entry a rank maggiore, ossia scegliamo la entry che ha più bit ad uno della RTMask; nel caso in cui si ottenga più di un risultato, si confrontano le metriche.
+
+\section{Routing}
