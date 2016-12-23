@@ -203,3 +203,158 @@ $$\text{DestIP}\;\&\&\;\text{RTMask}_i == \text{RTDestIP}_i$$
 (RT = Routing Table) allora la entry $i$ ha rank pari al numero di bit a uno della RTMask e si sceglie la entry a rank maggiore, ossia scegliamo la entry che ha più bit ad uno della RTMask; nel caso in cui si ottenga più di un risultato, si confrontano le metriche.
 
 \section{Routing}
+Abbiamo visto che il \textit{routing} potrebbe essere un problema di non poco conto. Fondamentalmente esistono due tipi di routing: \textit{diretto} ed \textit{indiretto}. Nel routing diretto si utilizzano i meccanismi della subnet alla quale si è associato, ossia ARP (per IPv4) e NDP (per IPv6). Nel routing indiretto, invece, il router cerca una entry nella routing table. Ciò che ci interessa vedere è, dunque, come viene costruita una routing table (RT) in un router. Prima di andare avanti, però, dobbiamo ricordare alcuni punti.\\
+\begin{itemize}
+	\item Il routing è composto da due elementi: un \textit{protocollo di routing} per costruire le RTs, che viene eseguito periodicamente a prescindere dai pacchetti dati, ed un \textit{algoritmo di switching}, che si applica ad ogni pacchetto in transito.
+	\item In genere le RTs non vengono mai costruite a mano, tranne in casi particolari.
+	\item Le RTs non possono cambiare troppo spesso perché, altrimenti, non funzionerebbero più i protocolli di Congestion Control del TCP; inoltre è da tenere presente che gli algoritmi di routing sono limitati dalla velocità della rete di segnalazione.
+	\item Il routing non viene fatto \textquotedblleft a caso": deve avere un \textit{obiettivo}, un funzionale da minimizzare.
+	\item Il routing influenza il funzionamento della rete; è compito del management guidare il routing, e non essere guidati da esso.
+\end{itemize}
+Abbiamo visto che esiste il routing diretto ed indiretto, ma esiste un'ulteriore classificazione: il \textit{routing IGP} (Interior Gateway Protocol), che avviene all'interno di un AS, ed il \textit{routing EGP} (Exterior Gateway Protocol), che avviene tra AS differenti. Si noti che questi non sono protocolli, ma \textit{classi di protocolli}; vediamoli nel dettaglio.
+
+Dal momento che un AS è un dominio amministrativo unico, si suppone che il gestore di rete possa (e debba) individuare un criterio ottimale all'interno dell'AS, in modo da ottimizzare i percorsi. Lo scopo dei protocolli \textit{IGP} è quello di applicare il criterio ottimale individuato dal gestore e di creare automaticamente le tabelle di routing che minimizzino il funzionale di costo scelto: è sostanzialmente un problema di ricerca del minimo. Da un punto di vista teorico è una questione semplice, dobbiamo: definire un funzionale di costo $f:\mathbb{R}^n\to\mathbb{R}$ (preferibilmente semplice e convesso), associare un costo ad ogni ramo (e/o nodo, ad esempio nel caso in cui si voglia minimizzare l'energia utilizzata da un nodo), ed applicare un algoritmo di ricerca del minimo per ogni coppia $(i,j)$ di nodi. È banale dimostrare che è sufficiente associare il costo ai rami, ma il problema è come realizzare l'idea.\\
+Una qualsiasi rete a pacchetto può essere modellata come un \textit{grafo orientato e pesato} in cui i nodi sono i router ed i rami sono le linee trasmissive o intere subnets: questa è la topologia logica della rete a livello IP. L'instradamento (routing) di un pacchetto equivale alla ricerca di un cammino (minimo) nel grafo associato della rete. Per ogni nodo sorgente esisterà un albero che lo connette a tutti i possibili nodi destinazione (non tutta Internet, stiamo parlando a livello di AS). Dunque in un AS con $N$ nodi di hanno $N^2$ alberi. Un router non deve tuttavia conoscere tutti gli alberi, è sufficiente che conosca il next-hop relativo a tutte le possibili destinazioni all'interno dell'AS; per avere questa conoscenza non è necessario calcolare gli $N^2$ alberi.\\
+Per quanto riguarda il costo dei rami è possibile utilizzare due strategie: \textit{costo fisso} e \textit{costo dinamico}. La prima strategia può essere considerata se il costo di un ramo è legato alla sua esistenza: assegniamo $costo = 1$ se il ramo esiste, $costo = \infty$ altrimenti. Questo algoritmo non genera un overhead considerevole, ma genera alberi molto statici e funziona bene sono se il carico su un ramo (o la congestione di nodo) non sono fattori importanti. Sostanzialmente il costo fisso viene usato per reti che hanno cambiamenti nel tempo molto lenti. La seconda strategia è decisamente più complessa della prima: è necessario decidere un funzionale di costo e può generare soluzioni instabili per le quali occorre fare attenzione. Il costo dinamico viene usato per reti che hanno cambiamenti nel tempo molto frequenti. In entrambi i casi il routing è \textit{dinamico}, perché è generato automaticamente.\\
+Un classico esempio di algoritmo di routing a costo fisso è il \textbf{RIP} (RIP v2: RFC 2453). Il costo di un ramo, detto \textit{metric}, è fisso e tale che $metric \in [1, \dots, 15]$; il valore $metric = 16$ indica un link down. L'algoritmo implementato è di tipo \textit{distance vector} (non ha bisogno di memorizzare la topologia della rete), nel quale si minimizza una \textquotedblleft distanza" generalizzata rappresentata dal parametro \textit{metric}. In pratica ogni nodo scambia con i vicini diretti (i router è cui e connesso direttamente, i next-hop) un pacchetto RIP; il router ricevente analizza il pacchetto e, se indica un percorso con metrica inferiore a quella già contenuta nella sua RT, aggiorna la RT. Il limite a 16 di \textit{metric} è imposto per ovviare al problema del link down. In pratica, se un link non è più disponibile, a questo viene associato un costo infinito ed un nodo adiacente non lo può raggiungere. Il nodo adiacente chiede dunque agli altri suoi vicini se possiedono una rotta per il nodo non raggiungibile e questi, non essendo stati ancora aggiornati del link down, rispondono erroneamente indicando un certo numero di hop. Si innesca così un meccanismo ciclico per cui inizia ad aumentare sempre più il numero di hop per raggiungere il nodo \textquotedblleft irraggiungibile" (questo problema prende il nome di \textit{counting-to-infinity}); per limitare questa crescita infinita, il primo router che raggiunge $metric = 16$ pone fine al ciclo ed aggiorna i vicini. Più è alto il massimo valore di \textit{metric}, più la rete impiega ad \textquotedblleft accorgersi" di un link down. Il RIP ha, dall'altro lato, un limite intrinseco per i 16 \textquotedblleft hop", che limita pesantemente le possibilità di differenziare i link su reti \textquotedblleft larghe" (i link dovrebbero quindi essere più o meno tutti uguali). È semplice riconoscere che questo è un algoritmo Bellman-Ford: alla ricezione di un pacchetto questo viene confrontato con le entry nella RT e se necessario viene aggiornata la RT. Se indichiamo con $|V|$ il numero di vertici e con $|E|$ il numero di archi del grafo, questo algoritmo necessita di $O(|V|\cdot|E|)$ passi per essere eseguito. Ogni passo è tuttavia eseguito ogni 30 secondi a causa del timer di invio dei pacchetti RIP, dunque se ad esempio prendessimo $|V|=40$ e $|E|=50$, l'algoritmo impiegherebbe oltre 16 ore per essere eseguito. Inoltre la convergenza lenta non permette, ad esempio, di legare la metrica alla congestione dei rami. In realtà non è esattamente così: esiste un algoritmo di routing, detto \textit{triggered-updates} per cui, quando cambia una tabella di routing, il messaggio di update dei vicini viene inviato dopo circa due secondi; questo permette dei tempi di convergenza ragionevoli. Vi sono varie versioni del RIP: il \textit{RIPv1}, in cui l'autenticazione ed il CIDR sono assenti (da non usare), il \textit{RIPv2} nel quale sono presenti l'autenticazione ed il CIDR, è retro-compatibile con RIPv1 e gestisce la differenza tra routes interior e exterior (dell'AS), ed \textit{RIPng}, che è identico al RIPv2, ma progettato per IPv6.\\
+Un esempio di algoritmo di routing a costo dinamico è l'\textbf{OSPF (Open Shortest Path First)}. Attualmente OSPFv2, descritto nell'RFC 2328, è per IPv4, mentre OSPFv3, descritto nell'RFC 2740, è per IPv6: vi sono poche differenze effettivamente, l'obiettivo è quello di unirli in un unico protocollo. In questo tipo di algoritmo si ha che il costo di un ramo (\textit{metric}) è dinamico, il parametro \textit{metric} è abbastanza grande da non creare problemi ed implementa un Link State Routing (ha bisogno di memorizzare la topologia della rete). Lo standard dell'OSPF ordina inoltre di utilizzare l'algoritmo di Dijkstra: se indichiamo con $|V|$ il numero di vertici e con $|E|$ il numero di archi del grafo, questo algoritmo necessita di $O(|E|+|V|\log |V|)$ passi per essere eseguito. Computazionalmente parlando è ancora piuttosto complesso: una volta ricevuti i dati (LSA), il router deve calcolare la propria tabella di routing prima dell'arrivo dei dati successivi. Ogni router ha quindi un limite massimo di numero di vertici e di archi che può supportare. Dal momento che il costo è associato ed ogni router, per decidere la RT, deve conoscere tutti i costi dei rami, è indispensabile che un router conosca l'intera topologia della rete (nel RIP non è necessario). In particolare, i router hanno la responsabilità di contattare i router adiacenti (cioè tutti i router che condividono con esso una parte della rete) e di acquisire la loro identità con dei pacchetti di Hello. I router formano quindi dei Link State Advertisement (LSA), contenenti una lista delle reti adiacenti con i relativi costi di raggiungimento, che verranno poi trasmessi a tutti gli altri router. Dunque tutti i router della rete avranno lo stesso insieme di dati e quindi potranno costruire lo stesso grafo pesato della rete, utilizzato per determinare i cammini ottimi e quindi l'instradamento. In questo processo vi è sia un grande carico computazionale sia un grande overhead. Dunque abbiamo che per il RIP la complessità computazionale influisce sulla velocità di convergenza, mentre nell'OSPF la complessità computazionale è un limite che influisce sulla potenza di calcolo della CPU del router. Per limitare i problemi di complessità computazionale e di carico di rete, OSPF viene organizzato in modo \textit{gerarchico} (in aree) all'interno di un AS (Figura \ref{img:OSPF}).
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale = 0.5]{images/OSPF}
+	\caption{Organizzazione gerarchica di OSPF.}
+	\label{img:OSPF}
+\end{figure}\\
+In particolare esiste un'area speciale detta \textit{area di backbone} che connette tutte le altre aree (numerate); la definizione delle aree è lasciata al network manager. Gli unici requisiti da rispettare sono due: tutti i router di ogni area devono essere interconnessi e le varie aree devono essere connesse solo tramite backbone. All'interno di ciascuna area l'algoritmo di routing è OSPF che calcola il path minimo tra i router di quell'area. Il risultato di utilizzare OSPF in un AS è quello di \textit{non} ottenere il percorso migliore (globale), perché questo non è la \textquotedblleft somma" di tutti i percorsi ottimi all'interno di un'area (locali).\\
+Vediamo quindi brevemente l'\textit{inizializzazione} di OSPF:
+\begin{enumerate}
+	\item Si effettua una inizializzazione e controllo (attraverso i livelli inferiori) delle interfacce.
+	\item Si inviano degli \textit{Hello} in broadcast per acquisire le informazioni sui router vicini.
+	\item Si ricevono gli \textit{Hello} dei vicini, che vengono anche utilizzati per testare il funzionamento dei link (keep alive).
+\end{enumerate}
+Nelle aree multi-accesso si elegge un \textit{designated router}, mentre l'altro router è di backup. Così facendo si limitano sia il traffico sia la complessità del grafo di rete. Periodicamente si inviano \textit{LSA (Link State Advertisement)} per fornire informazioni topologiche e per notificare cambiamenti nello stato dei router e dei links. A regime viene costruito il database topologico della rete (dai LSA), ciascun router calcola lo shortest-path tree a lui relativo e lo shortest-path tree genera la tabella di routing. Vi sono cinque tipi di pacchetto OSPF:
+\begin{itemize}
+	\item \textbf{Hello}. Stabilisce e mantiene le relazioni con i vicini.
+	\item \textbf{Database description}. Descrive il contenuto del database topologico. Questi messaggi sono in genere scambiati quando viene inizializzata un'adiacenza.
+	\item \textbf{Link-state request}. Richiede parti del database topologico dai router vicini. Questo tipo di messaggio viene scambiato dopo che un router scopre (esaminando i pacchetti di descrizione del database) che parti del proprio database topologico sono obsolete.
+	\item \textbf{Link-state update}. Risponde ad un pacchetti di tipo link-state request. Questi messaggi sono utilizzati anche per la dispersione regolare di LSAs. In un singolo pacchetto di tipo link-state update può essere incluso più di un LSA.
+	\item \textbf{Link-state acknowledgment}. Accetta i pacchetti di tipo link-state update.
+\end{itemize}
+Un concetto da precisare ulteriormente per quanto riguarda OSPF è l'\textit{adiacenza}: due router si considerano adiacenti se appartengono alla stessa area. Quindi, il traffico di OSPF è grande (per una rete grossa ho sia problemi di capacità computazionale sia dei problemi di overhead, perché i LSAs devono essere mandati da un nodo a tutti i nodi appartenenti alla stessa area) e tutti i router di una stessa area hanno lo stesso database topologico. I LSAs vengono inviati a tutti i router adiacenti, tramite flooding o multicast.
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale = 0.5]{images/BGP}
+	\caption{IBGP e EBGP.}
+	\label{img:BGP}
+\end{figure}\\
+Vediamo adesso i protocolli di routing \textit{EGP}. Tra AS diversi \textit{non} è possibile utilizzare protocolli di routing IGP; il motivo principale è la mancanza di una funzione da minimizzare. Dal momento che gli AS sono domini amministrativi diversi, è impensabile poter \textquotedblleft ottimizzare" una funzione, perché il costo dei link è dipendente da fattori non quantificabili su una scala condivisa. I protocolli EGP tendono dunque a minimizzare altro, come parametri locali e fattori commerciali. Il protocollo EGP più diffuso è il \textit{BGP} (Border Gateway Protocol) e ne esistono due varianti (Figura \ref{img:BGP}):
+\begin{itemize}
+	\item \textbf{IBGP} (Interior BGP). Viene utilizzato all'interno di un AS e serve per far comunicare (a livello logico) i suoi router di bordo. Le rotte interne all'AS sono sempre e comunque determinate da un IGP.
+	\item \textbf{EBGP} (Exterior BGP). Viene utilizzato tra due diversi AS. Normalmente opera su un link punto-punto.
+\end{itemize}
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale = 0.35]{images/BGP-internal}
+	\caption{Struttura interna di un router di bordo.}
+	\label{img:BGP-internal}
+\end{figure}
+In Figura \ref{img:BGP-internal} è rappresentata la struttura logica interna di un router di bordo, ovvero di un router che risiede al confine di un AS e si occupa di collegare fra loro più AS. Questo avrà un'interfaccia verso l'esterno ed una o più interfacce verso l'interno. Sull'esterno vi è il protocollo EBGP, sull'interno vi è l'IBGP ed un protocollo interno (e.g. OSPF). Questi tre protocolli convivono tramite la RT. Quando arriva la dichiarazione di una rotta raggiungibile dall'esterno (exterior) tramite EBGP, questa viene scritta nella RT come rotta esterna e viene propagata, con eventuali parametri, tramite IBGP in tutto l'AS; si noti che i parametri possono essere specificati da IBGP e non da OSPF. I parametri non sono quelli standard di un protocollo di routing interior, ma dei parametri locali (interni ai router):
+\begin{itemize}
+	\item \textbf{Weight}. È un attributo locale non propagato (advertised). In caso di multipath, viene preferita la route con weight più grande.
+		\begin{figure}[htbp]
+			\centering
+			\includegraphics[scale = 0.4]{images/weight}
+			\caption{Weight.}
+			\label{img:weight}
+		\end{figure}
+	Con riferimento alla Figura \ref{img:weight}, supponiamo di avere un AS di destinazione (AS 100) ed un AS di partenza (AS 200). Entrambi i link vengono realizzati con Advertisement di una data subnet. La rotta da preferire è quella a weight maggiore. Il weight può essere ad esempio riferito al tipo di collegamento (e.g. wireless o fibra).
+	\item \textbf{Local preference}. Si hanno due router di ridondanza in entrambi gli AS (Figura \ref{img:local-preference}).
+		\begin{figure}[htbp]
+			\centering
+			\includegraphics[scale = 0.4]{images/local-preference}
+			\caption{Local preference.}
+			\label{img:local-preference}
+		\end{figure}
+	È usato per scegliere la strada di \textit{uscita} preferita tra due o più router. In caso di multi-route viene preferita la route con maggior peso. Tra i due router dell'AS 100 vi è una comunicazione IBGP per mettersi d'accordo su quale dei due utilizzare, in base al local preference, per andare in quella sottorete. Una volta decisa, l'informazione tornerà ai router dell'AS 200 che avranno come \textit{preferred route} D-B. C toglierà dalla propria routing table usata da OSPF il link verso A.
+	\item \textbf{Multi-exit discriminator (MED) o metric attribute}. È utilizzato per suggerire la strada di \textit{ingresso} preferita tra due o più router. In caso di multi-route, viene preferita la route con minor peso.
+		\begin{figure}[htbp]
+			\centering
+			\includegraphics[scale = 0.4]{images/MED}
+			\caption{Multi-Exit Discriminator Attribute.}
+			\label{img:med}
+		\end{figure}
+	Sostanzialmente è il caso contrario di quello precedente. Se il local preference rappresenta una decisione del local AS, il MED rappresenta una dichiarazione di preferenza dell'altro AS.
+	\item \textbf{Origin}. È utilizzato per classificare il modo con cui BGP ha appreso una route. In particolare, le route sono divise in:
+	\begin{itemize}
+		\item \textbf{IGP}. La route è generata da un protocollo IGP ed è interna all'AS che la propaga.
+		\item \textbf{EGP}. La route è stata appresa attraverso un protocollo EGP.
+		\item \textbf{Incomplete}. La route è di origine sconosciuta o appresa tramite altra via (e.g. inserita a mano).
+	\end{itemize}
+	Questa classificazione è utilizzata per la scelta della tabella di routing: in genere si preferiscono secondo l'ordine IGP, EGP, Incomplete. Questo perché, se ad esempio si fosse data priorità maggiore ad un EGP piuttosto che ad un IGP, potrebbe essere selezionata una rotta esterna per arrivare ad un router del proprio AS.
+	\item \textbf{AS\_path}. È utilizzato per determinare i loop: ogni router di un AS traversato viene aggiunto ad una lista ordinata e vengono scartate tutte le routes che contengano loops (individuando se nel path vi è due volte lo stesso router).
+	\item \textbf{Next hop}. È utilizzato per indicare il next-hop (indirizzo IP del router che fa l'advertising). Nell'EBGP è l'indirizzo IP dell'advertiser, mentre nell'IBGP il next-hop viene lasciato inalterato: è quindi necessario avere un IGP all'interno dell'AS oppure utilizzare delle routes statiche all'interno dell'AS. La route viene altrimenti scartata.
+	\item \textbf{Community}. È utilizzato per raggruppare destinazioni (comunità) per le quali le decisioni di routing debbano subire speciali trattamenti. Sostanzialmente serve per limitare la distribuzione di una rotta.
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[scale = 0.5]{images/community}
+		\caption{Community.}
+		\label{img:community}
+	\end{figure}
+	Per definire le comunità si usano le \textit{route maps}. Le comunità preferite sono:
+	\begin{itemize}
+		\item \textbf{Internet}. Advertising libero senza alcuna restrizione.
+		\item \textbf{No-Export}. Non esportare la route tramite EBGP: rimane all'interno dell'AS.
+		\item \textbf{No-Advertise}. Non esportare la route a nessuno.
+	\end{itemize}
+	La community è stata ideata per questioni di sicurezza (non voglio che una rotta passi attraverso AS non fidati, che potrebbero usarla) e di accordi commerciali tra AS diversi (si decide se far passare o meno dati attraverso la propria infrastruttura di rete). Con riferimento alla Figura \ref{img:community}, è possibile vedere come nel primo caso il router dell'AS 1 trasmetta l'indirizzo della subnet, chiedendo esplicitamente di non ri-esportarlo all'esterno dell'AS 2; nel secondo caso, invece, l'indirizzo non viene esportato neppure ai router dell'AS 2. In entrambi i casi AS 3 non è a conoscenza del collegamento fra AS 1 e AS 2.
+\end{itemize}
+Per stabilire una route, i router BGP si scambiano quindi queste informazioni riguardanti la raggiungibilità di una rete e una serie di attributi relativi al link (o ai link) tra i due AS coinvolti. Come può essere già intuito, BGP non è un protocollo che ottimizza globalmente i percorsi: abbiamo solo una serie di minimi locali. I minimi locali vengono riconosciuti attraverso un funzionale non continuo. In particolare, quando si riceve un aggiornamento, si procede alla scelta del path secondo la seguente logica:
+\begin{enumerate}
+	\item Se il path specifica un next hop inaccessibile, scarta l'update.
+	\item Scegli il path con maggior weight (locale).
+	\item Se sono uguali, scegli il path con maggior local preference.
+	\item Se sono uguali, scegli il path originato dal BGP che gira sul router stesso.
+	\item Altrimenti, scegli il path con l'AS\_path più corto.
+	\item Se sono uguali, scegli in base all'origin (IGP $>$ EGP $>$ incomplete)
+	\item Altrimenti, scegli il path con il MED più basso.
+	\item Altrimenti, scegli il path esterno piuttosto che quello interno.
+	\item Altrimenti, scegli il path attraverso l'IGP più vicino.
+	\item Altrimenti, scegli il path con il numero IP più basso, secondo quanto specificato dall'ID del router BGP.
+\end{enumerate}
+Si noti che non vi sono regole che fanno riferimento alla community, perché questa agisce già, a livello generale, sull'esportabilità della route; questa procedura viene fatta sui dati che si hanno, dunque la community ha già agito in precedenza. Inoltre, l'unico punto sul quale è possibile compiere dell'ottimizzazione è il quinto (sul numero di hop) e si può notare immediatamente che non è un'ottimizzazione globale. Infine, la regola dieci, che apparentemente è priva di senso, in realtà vuole rappresentare la regola di default, cioè la regola che si vuole attuare in caso di fallimento delle condizioni precedenti. Quello che si vuol fare nell'ultima regola è evitare la casualità imponendo una scelta (arbitraria, ma fissata) dalla quale è possibile capire che siamo finiti nel caso di default.
+
+Dunque, non è prevista nessuna regola sulla minimizzazione della distanza né sulla banda tra AS diversi e non vi è ottimizzazione o minimizzazione end-to-end. La somma dei minimi locali \textit{non} garantisce la scelta di un path globale ottimo. Lo scopo del BGP è invece quello di avere dei \textit{percorsi stabili e raggiungibili}. Dal BGP dipendono quindi la connettività globale di Internet, la stabilità dei link e le priorità.
+
+\section{Quality of Service}
+La \textbf{Quality of Service (QoS)} si riferisce ai meccanismi di controllo delle risorse che influiscono sulla qualità di un servizio (sono quantità misurabili in modo oggettivo, e.g. banda). La QoS è la capacità di fornire diverse priorità a diverse applicazioni, utenti o flussi di dati, o per garantire un certo livello di prestazioni per un flusso di dati.\\
+La \textbf{Quality of Experience (QoE)} è una misura soggettiva dell'esperienza di un utente con un venditore. La QoE dipende dalla QoS.\\
+La base di tutto è la QoE, ovvero la soddisfazione dell'utente, che è dipendente dal \textit{servizio} e dalle \textit{aspettative} dell'utente. In una rete \textit{monoservizio} la QoE è un semplice problema relativo alla gestione della rete, mentre nelle reti \textit{multiservizio} la QoE dipende da come vengono gestiti nella rete i vari tipi di flussi dati. Alcuni pacchetti devono avere infatti una gestione diversa, altrimenti non è possibile avere un servizio adeguato.
+
+La QoS deve essere effettuata a tutti i livelli di rete, con un approccio cross-layer. A livello applicazione vi è lo sviluppo di API capaci di riservare trattamento diverso ai servizi Real-time a livello di sistema operativo, a livello trasporto i protocolli devono essere differenziati per servizio (QoS end-to-end), a livello rete vi deve essere una differenziazione dei flussi a livello IP (QoS router-to router), a livello collegamento vi è una differenziazione dei flussi a livello di frame o celle (QoS sul link), ed a livello fisico devono essere presenti mezzi trasmissivi più efficienti (rame, fibra ottica), tecniche di codifica, BER adattiva.
+
+Nel 2001 Sprint (un grande ISP americano) sosteneva che la QoS non serve, perché se si ha a disposizione una banda pressoché infinita non vi sono problemi di trasmissione. In realtà Sprint stava adottando una politica di \textit{over-provisioning}, per cui aveva un'infrastruttura di rete (anche con diverse fibre per lo stesso link) a capacità trasmissiva ed a banda molto elevata. Infatti, il costo maggiore per la realizzazione di un'infrastruttura di rete sono gli scavi per far passare i collegamenti, non la singola fibra in sé. Dunque, non appena il traffico raggiungeva un livello sufficientemente alto, semplicemente veniva allocata più banda. Ciò che serviva secondo Sprint era la Quality of Access (QoA); le reti di dorsale europee sono molto più congestionate e con capacità inferiori. Purtroppo l'over-provisioning non è così semplice in Europa.
+
+In sostanza le tecniche di QoS servono a raggiungere il grado desiderato di QoE; tuttavia la QoE non è dipendente dalle tecniche che vengono usate (l'utente non ne è al corrente), quindi qualsiasi mezzo per ottenere la QoE è lecito. Esistono differenti metodi per ottenere la QoE.\\
+Un esempio concreto di tipi diversi di traffico è il traffico di tipo \textit{non real-time} (TCP) ed il traffico \textit{real-time} (UDP). Il primo è di tipo Burst, richiede un tasso di errore praticamente nullo, tutti i pacchetti sono trattati allo stesso modo e potrebbero essere ricevuti con un certo ritardo. Il secondo è un flusso di tipo continuo, accetta un certo numero di errori, i pacchetti hanno priorità diverse e devono essere ricevuti con il minor ritardo possibile.\\
+Un altro esempio è il VoIP. Se andiamo a misurare la qualità di una comunicazione VoIP, potremmo usare i seguenti parametri: tasso di perdita di pacchetti IP, delay e delay Jitter (variazione del delay). La QoS risultante è mostrata in Tabella \ref{tab:voip-table}.
+\begin{table}[htbp]
+	\centering
+	\begin{tabular}{l|c|c|c|c}
+		& Scarsa & Media & Buona & Ottima \\ \hline
+		Packet Loss (\%) & 25 & 10 & 3 & 0 \\ 
+		Delay (ms) & $>450$ & 450 & 250 & $<150$\\
+		Jitter (ms) & 225 & 125 & 75 & 0
+	\end{tabular}
+	\caption{Tabella dei parametri di QoS VoIP.}
+	\label{tab:voip-table}
+\end{table}\\
+Il delay Jitter è il parametro più difficile da rispettare. Se vogliamo una buona qualità dobbiamo quindi avere un ritardo basso e pochissimo accodamento nei buffer. La presenza di una coda implica infatti un Jitter; togliendo la coda e buttando quindi alcuni pacchetti, non abbiamo Jitter. Dunque la QoS è sostanzialmente un trade-off tra packet loss, delay e Jitter. Esiste un altro metodo per evitare il riempimento delle code: AQM (Active Queue Management).
+
+Per diminuire il Jitter a destinazione vi è un \textit{buffer di playout}. Tutti i flussi RT (Real-Time) hanno caratteristiche di isocronicità (grossomodo), o quantomeno devono essere usati dal player allo stesso rate di emissione della sorgente. La trasmissione in rete introduce perdite e ritardi, ma soprattutto altera i riferimenti temporali intra-pacchetto (Jitter). Per recuperare la desincronizzazione si deve usare un buffer di playout che è dipendente dal Jitter, ma che però introduce un ulteriore ritardo. In sostanza: se è troppo piccolo si cominciano a perdere pacchetti e/o a non averne di disponibili; se è troppo grande si introduce troppo ritardo. Un esempio di buffer di playout è quello di YouTube, ossia la barra grigia che ne indica il riempimento.
+
+La QoS end-to-end deve garantire livelli di servizio accettabili in \textit{tutti} gli elementi della catena di comunicazione. Sorgono problemi quando il link end-to-end attraversa reti di ISP diversi: servono accordi di \textit{peering} e di \textit{Service Level Agreement} fra gli ISP. Un problema risiede nel fatto che non tutte le reti sono uguali, ciascuna ha le proprie criticità: accesso (pochi utenti, banda limitata), core (molti utenti, banda molto elevata), tecnologie differenti. Non è sufficiente creare un backbone ad alta velocità per ridurre la dipendenza dalla QoS ed esistono reti in cui non è possibile fare affidamento sulla larga banda.
+
+Per la QoS servono differenti strategie nelle diverse parti di rete. In particolare possiamo parlare di QoS nei nodi di rete e QoS end-to-end. La prima è sostanzialmente a livello IP: shaping del traffico, scheduling dei pacchetti, classificazione, riservazione delle risorse, etc. La seconda può coinvolgere anche i livelli protocollari superiori con meccanismi di  di segnalazione end-to-end, architetture di rete per la QoS, etc.
+
+
+%\section{MPLS}
+%\section{Network Management}
