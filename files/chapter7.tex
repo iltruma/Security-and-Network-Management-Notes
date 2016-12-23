@@ -353,8 +353,61 @@ Per diminuire il Jitter a destinazione vi è un \textit{buffer di playout}. Tutt
 
 La QoS end-to-end deve garantire livelli di servizio accettabili in \textit{tutti} gli elementi della catena di comunicazione. Sorgono problemi quando il link end-to-end attraversa reti di ISP diversi: servono accordi di \textit{peering} e di \textit{Service Level Agreement} fra gli ISP. Un problema risiede nel fatto che non tutte le reti sono uguali, ciascuna ha le proprie criticità: accesso (pochi utenti, banda limitata), core (molti utenti, banda molto elevata), tecnologie differenti. Non è sufficiente creare un backbone ad alta velocità per ridurre la dipendenza dalla QoS ed esistono reti in cui non è possibile fare affidamento sulla larga banda.
 
-Per la QoS servono differenti strategie nelle diverse parti di rete. In particolare possiamo parlare di QoS nei nodi di rete e QoS end-to-end. La prima è sostanzialmente a livello IP: shaping del traffico, scheduling dei pacchetti, classificazione, riservazione delle risorse, etc. La seconda può coinvolgere anche i livelli protocollari superiori con meccanismi di  di segnalazione end-to-end, architetture di rete per la QoS, etc.
+Per la QoS servono differenti strategie nelle diverse parti di rete. In particolare possiamo parlare di \textit{QoS nei nodi di rete} e \textit{QoS end-to-end}. La prima è sostanzialmente a livello IP: shaping del traffico, scheduling dei pacchetti, classificazione, riservazione delle risorse, etc. La seconda può coinvolgere anche i livelli protocollari superiori con meccanismi di segnalazione end-to-end, architetture di rete per la QoS, etc.\\
+In un nodo si possono implementare diverse funzioni relative alla QoS, ma non tutte sono applicabili in tutti i punti della rete a causa del carico computazionale che richiedono. Queste sono:
+\begin{itemize}
+	\item \textbf{Classifier}. Osserva i pacchetti IP entranti nel nodo e li classifica in base al loro indirizzo IP, Port Number e al tipo di protocollo superiore.
+	\item \textbf{Marker}. Provvede a \textquotedblleft marchiare" i pacchetti con una QoS a seconda di come sono stati classificati dal Classifier.
+	\item \textbf{Traffic Policer}. Esegue un condizionamento del traffico, osservando il rate possibile ed agendo di conseguenza. In pratica confronta il traffico con le policy definite nel Service Level Agreement (contratto con ISP).
+	\item \textbf{Traffic Shaper}. Modella il flusso sulla porta di uscita in modo da ottimizzare il throughput, sulla base delle istruzioni fornite Traffic Policer.
+	\item \textbf{Scheduler}. Genera più code all'interno del nodo di rete e usa algoritmi di scheduling delle code, evitando o gestendo le congestioni di rete. È l'elemento che influenza di più la QoS.
+\end{itemize}
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale = 0.5]{images/token-bucket}
+	\caption{Token Bucket.}
+	\label{img:token-bucket}
+\end{figure}
+Un esempio di algoritmo di Traffic Policy (o Shaper) nei nodi di rete è il Token Bucket (Figura \ref{img:token-bucket}). Quando un pacchetto arriva al router, viene tolto dal Bucket un certo numero di Tokens (dipendentemente dalla dimensione del pacchetto); un pacchetto non potrà essere inviato se non ci sono Tokens a sufficienza nel Bucket. Il router trasmetterà un burst di pacchetti minore o uguale a $B$, ad un rate minore o uguale ad $R$. Lo scopo principale è quello di limitare il rate medio di pacchetti.
 
+Gli algoritmi di scheduling nei nodi di rete sono molto simili a quelli che si trovano nei Sistemi Operativi, hanno gli stessi obbiettivi e gli stessi difetti. Vediamo tre tipi di scheduler:
+\begin{enumerate}
+	\item \textbf{Scheduler ottimo}. Uno scheduler ottimo sarebbe quello che si avvicina al limite del \textit{Fluid Scheduling}, ossia ad uno scheduler che tende a dividere i dati in unità piccolissime. Sfortunatamente le \textquotedblleft unita" di scheduling sono i pacchetti, oltre non è possibile scendere.
+	\item \textbf{Scheduler non Work Conserving}. È uno scheduler che può essere inattivo in qualche istante, ma può garantire alcune proprietà, come le deadlines. Se succede qualcosa di imprevisto, si è in grado di interrompere il task in corso.
+	\item \textbf{Scheduler Work Conserving}. È uno scheduler che è inattivo solo quando non vi è più traffico da spedire. Non è possibile tuttavia interrompere un task in corso, ossia non è strettamente a priorità.
+\end{enumerate}
+Gli algoritmi di scheduling nei router sono uno dei punti più delicati.
+
+A volte le code di ricezione si riempiono e buttare via i pacchetti quando la coda è piena (\textit{tail-drop}) è la cosa sbagliata. Il \textit{queue management} è strettamente legato al \textit{congestion control}, perché il TCP (e molti altri protocolli) rilevano le congestioni misurando il numero di pacchetti persi. Sostanzialmente servono ad evitare congestioni: si fornisce un feedback attivo al trasmettitore prima che la coda diventi piena. Un esempio di come questo viene fatto è l'algoritmo \textbf{WRED (Weighted Random Early Detection)}, di cui vediamo gli aspetti principali:
+\begin{itemize}
+	\item I pacchetti vengono scartati dal nodo di rete con probabilità tanto maggiore quanto più la coda è piena (RED).
+	\item Si fissano dei limiti per la lunghezza della coda ed a seconda del loro superamento si scartano i nuovi pacchetti in arrivo.
+	\item La probabilità di scarto può dipendere in modo pesato dal tipo di classe cui appartengono (WRED).
+	\item Sfrutta rate adattivo del TCP, che vede lo scarto del pacchetto come dovuto a congestione, e dunque rallenta il rate in trasmissione; non funziona con UDP.
+\end{itemize}
+Si noti che quella appena descritta è una tecnica atta ad \textit{evitare} la congestione sul nodo di rete, anziché gestirla una volta avvenuta.
+
+In Internet ci sono sostanzialmente due modelli di gestione della QoS: \textbf{Integrated Services (IntServ)} (Giugno 1994, RFC 1633) e \textbf{Differentiated Services (DiffServ)} (Dicembre 1998, RFC 2475). Non sono più utilizzati per problemi pratici.\\
+Il modello IntServ prevede di \textit{prenotare le risorse} necessarie al mantenimento della QoS richiesta in \textit{ogni apparato} di rete attraversato da un flusso dati. Il flusso è inteso come sequenza di pacchetti con stesso indirizzo IP sorgente e destinazione e stessi Port numbers. Ogni router della rete deve allocare risorse (banda, memoria, etc.) a
+sufficienza per ciascun flusso e ciascun router della rete deve avere un \textit{per-flow state} relativo a ciascun flusso a cui viene data QoS. Poiche le risorse su ogni router sono limitate, ciascun router dovrà controllare e decidere quali flussi allocare e quali rifiutare: per questo esiste un \textit{Admission Control}. Il modello IntServ ha tre componenti base:
+\begin{itemize}
+	\item \textbf{Traffic Classes}. Classi di servizio ottenibili da un flusso. I parametri di ciascuna classe possono essere modificati a piacimento.
+	\item \textbf{Traffic Control}. Esegue controllo sul traffico che transita su ogni nodo di rete. È composto da vari sotto-componenti.
+	\item \textbf{Setup Protocol}. Costituisce il sistema di segnalazione fra i nodi di rete per l'allocazione delle risorse. È anche la base per l'Admission Control.
+\end{itemize}
+Le Classi di Traffico (Traffic Classes) ammissibili sono tre:
+\begin{enumerate}
+	\item \textbf{Default}. È il servizio Best Effort dell'Internet attuale, anche se non è una vera Traffic Class.
+	\item \textbf{Guaranteed Service}. Supporta traffico Real-Time che richiede un ritardo di propagazione limitato. Offre una \textit{garanzia} sulla QoS offerta.
+	\item \textbf{Controlled Load Service}. Approssima un servizio di tipo Best Effort su una rete \textit{non congestionata} (avere prestazioni ottimali).
+\end{enumerate}
+La definizione del Guaranteed Service nasconde un grosso problema: la garanzia. Per ottenere davvero un Guaranteed Service si dovrebbe usare un non work conserving scheduler, dunque di solito si usa il Controlled Load Service. Il Traffic Control viene effettuato tramite tre sotto-sistemi:
+\begin{enumerate}
+	\item \textbf{Admission Control}. Controlla che le risorse sul router e nella rete possano supportare un particolare servizio richiesto.
+	\item \textbf{Packet Classifier}. Esamina indirizzo IP e Port Number per vedere la classe a cui appartiene.
+	\item \textbf{Packet Scheduler}. Effettua lo scheduling dei pacchetti per trasmetterli alla porta di uscita del router (usando ad esempio WFQ).
+\end{enumerate}
+Ovviamente nel caso di un router c'è anche una sezione relativa al forwarding dei pacchetti.
 
 %\section{MPLS}
 %\section{Network Management}
