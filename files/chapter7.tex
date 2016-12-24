@@ -478,10 +478,51 @@ In un router convenzionale le funzioni di forwarding sono ad alto costo computaz
 Nella metà degli anni '90 gli switch IP erano molto più lenti degli switch ATM, poiché gli switch ATM operano sul forwarding del VCI/VPI. Vennero quindi proposte numerose soluzioni proprietarie per adottare tecniche di label forwarding all'IP, da Cisco Systems (Tag Switching), IBM (aggregate route-based IP switching) e Cascade (IP Navigator): tutte avevano in comune l'idea di adottare il label switching in maniera simile a quello usato da ATM. Dunque nel 1997 IETF aprì un gruppo di lavoro per definire MPLS come approccio standard. MPLS viene definito come standard nel 2001 (primo set di Proposed Standard), ma negli ultimi anni '90, però, erano già stati prodotti switch IP nativi veloci quanto quelli ATM (i.e., switch hardware-based a livello IP), dunque non era più necessario usare IP over ATM per fare il routing su reti ad altissima velocità. MPLS offre tuttora cose che l'IP switching non permette (bene): QoS support, Traffic Engineering, Virtual Private Networks (soprattutto in IPv4) e Multiprotocol Support.\\
 Come abbiamo visto, DiffServ e IntServ hanno entrambi delle controindicazioni. In particolare, i network provider hanno necessità di: garantire specifici quantitativi di banda per determinate applicazioni, controllare la latenza/jitter, garantire i livelli di QoS specificati negli SLA e configurare la QoS in base agli utenti. MPLS fornisce un framework connection-oriented all'interno del quale è possibile soddisfare questi requisiti.\\
 Il routing \textquotedblleft tradizionale" IP (e.g., OSPF) non prevede cammini multipli e opera su base pacchetto. MPLS opera su base \textit{flusso} permettendo di usare route multiple tra punti di ingresso/uscita dal network, ciascuna soggetta a QoS. Il re-routing in MPLS è esso stesso soggetto a QoS, ma è possibile  operare il cosiddetto traffic engineering nel senso di ottimizzazione delle risorse di rete in base alle richieste di ciascun flusso. Si noti che il flusso MPLS non corrisponde ai concetti di flusso DiffServ o IntServ.\\
-MPLS fa il routing in maniera \textquotedblleft blind", quindi permette di ottenere: separazione dei flussi di una VPN da quelli del normale traffico e garantire ai flussi della VPN un elevato gradi di sicurezza. Inoltre MPLS non ha necessità di \textquotedblleft vedere\textquotedblleft nemmeno l'header IP, per cui si possono creare VPN con crittografia anche degli header IP.\\
-MPLS non si basa su alcuna tecnologia in particolare, è possibile avere switch IP MPLS, ATM MPLS e Frame Relay MPLS. Inoltre gli switch MPLS-enabled possono coesistere con switch non-MPLS, e MPLS può \textquotedblleft trasportare" qualsiasi tipo di protocollo, non soltanto IP: è quindi \textit{multiprotocollo}.
+MPLS fa il routing in maniera \textquotedblleft blind", quindi permette di ottenere: separazione dei flussi di una VPN da quelli del normale traffico e garantire ai flussi della VPN un elevato gradi di sicurezza. Inoltre MPLS non ha necessità di \textquotedblleft vedere" nemmeno l'header IP, per cui si possono creare VPN con crittografia anche degli header IP.\\
+MPLS non si basa su alcuna tecnologia in particolare, è possibile avere switch IP MPLS, ATM MPLS e Frame Relay MPLS. Inoltre gli switch MPLS-enabled possono coesistere con switch non-MPLS, e MPLS può \textquotedblleft trasportare" qualsiasi tipo di protocollo, non soltanto IP: è quindi \textit{multiprotocollo}.\\
+Un network MPLS consiste in un set di nodi MPLS contigui detti \textbf{LSR (Label Switching Routers)}. Una label definisce un flusso di pacchetti tra due endpoint o, nel caso di multicast, tra un ingress node e molti egress nodes. Un flusso con una label si chiama \textit{FEC (Forward Equivalence Class)} e per ciascuna FEC viene stabilito un path attraverso il network. Una FEC è caratterizzata anche dalla QoS richiesta per quella FEC. Si noti il mix tra concetti IntServ e DiffServ. Mentre per IntServ un flusso è unidirezionale tra un nodo ed un altro (end-to-end), per DiffServ è dato dai pacchetti che hanno lo stesso colore e per MPLS è dato dai pacchetti che hanno la stessa label.
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale = 0.4]{images/MPLS}
+	\caption{Funzionamento MPLS.}
+	\label{img:MPLS}
+\end{figure}
+È possibile in questo modo aggregare dei dati che hanno bisogno della stessa QoS. In Figura \ref{img:MPLS} è riportato il funzionamento del MPLS. Prima del routing/delivery dei pacchetti di una FEC si deve stabilire il path (\textit{LSP - Label Switched Path}). I parametri di QoS del FEC determinano la quantità di risorse assegnate a quel FEC e le politiche di accodamento e scarto per quel FEC. Per far ciò si fa ricorso sia ad algoritmi IGP (come OSPF) per costruire e mantenere la topologia della rete sia a politiche di assegnazione e distribuzione delle label. Le label sono locali tra due LSR e possono essere impostate manualmente o tramite protocolli come il Label Distribution Protocol (LDP) o l'RSVP-TE. Quindi una label potrebbe non essere uguale per tutto il percorso: ogni nodo può decidere se cambiarla o meno. La FEC invece rimane uguale. Abbiamo che:
+\begin{enumerate}
+	\item Un pacchetto entra nel ingress edge LSR, gli viene assegnata una label (FEC) in base a una serie di parametri simili a quelli DiffServ e gli viene attaccata una label (assgenazione ad un LSP) se esiste un LSP adeguato. Alternativamente l'edge LSR coopera con gli altri LSR per costruire una nuova LSP.
+	\item All'interno del dominio MPLS un LSR si limita a: togliere la label in ingresso, aggiungere la label di uscita e fare il forwarding.
+	\item L'egress LSR toglie la label e fa il forwarding \textquotedblleft tradizionale" sui nodi non-MPLS.
+\end{enumerate}
+MPLS prevede inoltre un una gestione centralizzata del permette di scegliere il path ottimo in modo globale.
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale = 0.4]{images/MPLS-example}
+	\caption{Esempio di funzionamento MPLS.}
+	\label{img:MPLS-example}
+\end{figure}\\
+In Figura \ref{img:MPLS-example} è riportato un esempio di funzionamento dell'MPLS. Entrano due pacchetti ed ad ognuno viene assegnata una FEC diversa (a, b) dal primo router; i nodi interni non guardano più la FEC, ma solo le label ed eventualmente le modificano.\\
+Contrariamente ad ATM, che ha solo 2 livelli di stacking delle label (VCI e VPI), MPLS permette uno stacking virtualmente illimitato. Un LSR può assegnare una label a un gruppo di LSP in ingresso unendoli in un singolo LSP di uscita. All'uscita dal tunnel gli LSP vengono differenziati nuovamente. Questo è ottenuto \textit{aggiungendo} una label (stacking) alla label già presente. Le label vengono processate in ordine LIFO. Il numero di livelli di stacking non è definito, quindi non è limitato a due.
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale = 0.55]{images/label-format}
+	\caption{Formato di una label.}
+	\label{img:label-format}
+\end{figure}\\
+In Figura \ref{img:label-format} è riportato il formato di una label. Il campo \textit{label value} (20 bits) indica la label con significato locale; il campo \textit{exp} (3 bits) contiene dati sperimentali, come campo DS o guide relative al PHB; il campo \textit{S} (1 bit) è posto a 1 se la label è l'ultima dello stack, 0 altrimenti; il campo \textit{TTL} (8 bit) rappresenta il Time To Live.
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale = 0.45]{images/label-position}
+	\caption{Posizione della label nei vari tipi di pacchetto.}
+	\label{img:label-position}
+\end{figure}\\
+In Figura \ref{img:label-position} è riportata la posizione della label nei vari tipi di pacchetto: in generale questa viene sempre posta prima dell'header IP. Dal momento che l'MPLS \textit{non} esamina l'header IP, non può controllare o modificare il campo TTL dell'IP, quindi il TTL IP (o equivalente) viene replicato nella label. All'egress LSR il campo TTL della label viene ricopiato nel campo TTL dell'header IP (o equivalente); per IPv6 si usa il campo \textit{Hop Limit}. Si noti che solamente il TTL della label più \textquotedblleft esterna" ha significato. Se la label viene rimossa (i.e., fine di un tunnel) si ricopia il valore nella label più esterna corrente.\\
+Per poter funzionare efficacemente è necessario poter stabilire l'LSP a cui assegnare una determinata FEC (o crearlo). MPLS permette due opzioni:
+\begin{enumerate}
+	\item \textbf{Hop-by-hop routing}. Ciascun LSR sceglie autonomamente il prossimo LSR. Funzionalmente equivalente all'uso di OSPF, si appoggia ai protocolli IGP. Permette i vantaggi dell'uso delle label ma \textit{non} quelli del traffic engineering, QoS, etc.
+	\item \textbf{Explicit routing}. Con l'explicit routing l'ingress o l'egress LSR determinano il path completo (o quasi) del routing. L'explicit routing può essere \textit{strict} o \textit{loose}. Nello \textit{strict explicit routing} l'LSP è definito completamente tramite gli LSR coinvolti. Nel \textit{loose explicit routing} l'LSP è definito tramite alcuni degli LSR coinvolti, lasciando un margine di incertezza sugli LSR non specificati. Serve per i link di backup o laddove vi siano topologie mesh equivalenti. L'explicit routing può essere statico (LSP definiti a priori) o dinamico.
+\end{enumerate}
+Per l'explicit routing dinamico serve che il protocollo IGP sottostante dia metriche ricche sullo stato della rete. OSPF non è per esempio sufficiente. Sono stati definite estensioni all'OSPF per questo. La route è calcolata in base agli attributi dei link tra gli LSR (banda, ritardi, PER, PLR, etc.) ed agli attributi della FEC (QoS richiesta). Gli algoritmi di calcolo della route che si basano sugli attributi sono detti \textit{constrain-based routing algorithms} e sono notevolmente più complessi degli algoritmi tradizionali, ma vengono eseguiti solo alla creazione del'LSP.\\
+Per far si che le label siano correttamente assegnate (sono locali) si devono impiegare dei protocolli di distribuzione delle label; ne esistono svariati, ad esempio LDP, RSVP-TE, etc. Il protocollo di distribuzione delle label è comunque legato al tipo di LSP (esplicito, dinamico, strict, loose) e al tipo di protocollo di routing implementato. La tecnica più usata è quella backward, che partendo dall'egress LSR informa ogni LSR precedente della label locale assegnata; non è tuttavia così semplice, dal momento che un LSP può contenere traffico multicast -e- many-to-one (il contrario del multicast).\\
+Esiste una generalizzazione dell'MPLS, il \textit{GMPLS (Generalized MPLS)}. Lo scopo di GMPLS è quello di estendere i concetti di management propri di MPLS a reti di natura diversa e di estendere l'introperabilità. È un set di protocolli di management degli LSP e di setup degli LSP sui diversi tipi di rete. In particolare il focus è sul setup degli LSP, sul mantenimento della QoS e sul miglioramento della fault-tolerance della rete. È tuttavia ancora un work-in-progress, mentre l'adozione di MPLS è un dato di fatto: l'evoluzione e l'uso su larga scala di GMPLS è tuttora un'incognita. Alla fine dei conti non interessa molto, in generale, l'evoluzione di GMPLS perché al momento non vi sono forti necessità pratiche e concrete da parte degli ISP.
 
-
-
-
-%\section{Network Management}
+\section{Network Management}
