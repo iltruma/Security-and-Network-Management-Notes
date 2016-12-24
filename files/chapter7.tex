@@ -408,6 +408,76 @@ La definizione del Guaranteed Service nasconde un grosso problema: la garanzia. 
 	\item \textbf{Packet Scheduler}. Effettua lo scheduling dei pacchetti per trasmetterli alla porta di uscita del router (usando ad esempio WFQ).
 \end{enumerate}
 Ovviamente nel caso di un router c'è anche una sezione relativa al forwarding dei pacchetti.
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale = 0.4]{images/int-serv-router}
+	\caption{Schema di un nodo IntServ.}
+	\label{img:int-serv-router}
+\end{figure}
+In Figura \ref{img:int-serv-router} è rappresentato lo schema di ogni IntServ router. Vi è un classificatore di pacchetti per riconoscere se un pacchetto appartiene ad un flusso gestito e che deve essere confrontato con un database QoS; l'admission control viene utilizzato solo se il pacchetto appartiene ad un flusso nuovo. Vi è poi un forwarder che, sulla base della decisione presa e della routing table, decide di inoltrare il pacchetto, che andrà agli scheduler. Gli scheduler agiranno di conseguenza alla QoS decisa. Un limite di IntServ risiede routing table, che è diversa da quella normalmente usata: se è stato allocato un path per far comunicare due host, questo potrebbe cambiare nel corso della trasmissione per vari motivi (e.g. decisi dall'IGP), e la routing table deve essere \textquotedblleft interrotta" (per flussi con QoS). Inoltre, se vi è un guasto, il flusso va negoziato, ed Packet Classifier può rivelarsi computazionalmente molto costoso, dipendentemente dal tipo di rete su cui opera. Un aspetto positivo è il \textbf{Resource Reservation Protocol (RSVP)}, cioè il protocollo di setup dei nodi di rete. Sostanzialmente abilita gli host o i router a richiedere l'allocazione delle necessarie risorse di rete ed installa nei nodi di rete il \textquotedblleft Per-Flow state" soft (refreshing periodico). Il Per-Flow state è \textit{soft}, nel senso che se non ne viene fatto il refresh viene cancellato dopo un certo timeout; questo evita che un elemento di rete possa finire le proprie risorse a causa di un errore di comunicazione (es. un host che scompare senza effettuare il teardown della comunicazione). In IntServ si identificano due ruoli: il \textit{sender}, cioè colui che invia i dati soggetti a QoS, ed il \textit{receiver}, ossia colui (o coloro) che ricevono tali dati.
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale = 0.4]{images/RSVP}
+	\caption{Schema del protocollo RSVP.}
+	\label{img:RSVP}
+\end{figure}\\
+Si consideri lo schema riportato in Figura \ref{img:RSVP}. Il protocollo RSVP si basa su due messaggi: \textit{PATH Message}, trasmesso dal \textit{Sender} verso i \textit{Receivers} (unicast o multicast) che indica il percorso che seguiranno i pacchetti, e \textit{RESV Message}, trasmesso dai \textit{Receivers} verso il \textit{Sender} in risposta al suo PATH, eventualmente modificando alcuni parametri. Vediamo più nel dettaglio come funzionano questi due tipi di messaggio. Nel messaggio PATH il Sender avvia una sessione RSVP, inserisce nel PATH message il \textit{Sender Template} (i.e. indirizzo IP e numero di porta) ed il \textit{Sender Tspec}, che descrive le caratteristiche del traffico dati che sarà generato; ciascun router memorizzerà il Sender Template, installerà lo stato della richiesta, e potrà aggiornare l'\textit{Adspec}, che riassume le caratteristiche di QoS del percorso fatto fino a quel router. Nel messaggio RESV, il Receiver riceve il PATH contenente anche una traccia del percorso fatto dal PATH e genera un RESV message, contenente il \textit{FilterSpec} (i.e., indirizzo IP e numero di porta del Receiver) ed il \textit{Flowspec} (descrive la QoS che il Receiver richiede); l'Admission Control di ogni router effettua l'ultimo controllo per determinare se le risorse sono disponibili ed in caso non lo siano viene generato un messaggio d'errore per il Receiver; infine ciascun router si aggiorna tramite il Filterspec e il Flowspec.\\
+Per avere maggior controllo sulla QoS delle applicazioni, RSVP prevede diversi \textquotedblleft reservation styles", fra cui: \textit{Fixed-Filter (FF)}, in cui vi è una prenotazione di banda per ogni utente chiamante (es.: videoconferenza con requisiti di ritardo stringenti), e \textit{Shared-explicit (SE)}, in cui più utenti chiamanti nella stessa sessione possono dividere una prenotazione di risorse (es.: voiceconference dove solo uno per volta può parlare). RSVP supporta anche il multicast: riassume le prenotazioni provenienti da ciascun flusso, allocando sul nodo la maggior banda richiesta, e poi trasmette il Flowspec totale al router vicino (farà admission control sul flusso totale). È molto flessibile. Si noti che RSVP e IntServ sono \textit{unidirezionali}: per una \textquotedblleft telefonata" VoIP servono due sessioni IntServ.\\
+Gli aspetti positivi sono: allocazione dinamica della banda, supporto quasi completo di RSVP, ed è un protocollo relativamente maturo, e dunque più stabile e diffuso. Vi sono però diversi problemi, per il quale non viene usato, tra cui: aggiornamento continuo (ogni 30 secondi) che comporta un notevole aumento del traffico di segnalazione, richiesta di memorizzazione di molti oggetti relativi ad ogni flusso su ogni router, necessita di una rete con buon Best Effort e routing stabile (le tabelle non devono variare troppo). In pratica \textit{non è scalabile in reti di elevate dimensioni}. Infine, basta un solo router che non supporta IntServ per farlo cadere.
 
-%\section{MPLS}
+Il DiffServ è il contrario del IntServ. Il modello DiffServ si basa sul multiplexing statistico, ossia si dividono (dinamicamente) le risorse di rete tra un numero limitato di diversi \textquotedblleft tipi" di traffico, in modo che ciascuno sia sostanzialmente isolato dagli altri. La complessità si sposta all'edge della rete, dove si classificano i singoli pacchetti, si marchiano (\textit{colorazione}) e si aggregano per poi inviarli nel core; flussi provenienti da diverse applicazioni vengono aggregati insieme e trattati allo stesso modo. Si opera in pratica su aggregati. Nel core il flusso aggregato riceve un trattamento relativo alla classe di servizio (al colore) dei pacchetti che contiene (\textit{Per-Class}, non più Per-Flow). Non vi è più segnalazione (RSVP), né admission control, e dunque è necessario ricorrere al \textit{provisioning} delle risorse a priori (vengono allocate più risorse del necessario), e viene controllato all'edge che il traffico immesso non sia eccessivo. Non vi è più traffico di segnalazione. La base del DiffServ e nel modo in cui si \textquotedblleft colorano" i pacchetti e come il \textquotedblleft colore" viene trattato. Il colore viene inserito nei bit di header IP del Traffic Class (IPv6) e nei bit di header IP del Type of Service (IPv4), precisamente nel \textit{DSCP} (6 bit). Abbiamo inoltre il \textit{Per-Hop-Behavior (PHB)}, che definisce il servizio che il pacchetto riceverà a ciascun hop nella rete, ed il \textit{Behavior Aggregate (BA)}, un  gruppo di pacchetti (aggregato) con stesso DSCP: nella rete si applica un PHB ad ogni BA.\\
+I nodi DiffServ agiscono diversamente tra \textit{Edge} e \textit{Core}.
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale = 0.4]{images/diffserv-edge-node}
+	\caption{DiffServ Edge node.}
+	\label{img:diffserv-edge-node}
+\end{figure}
+In Figura \ref{img:diffserv-edge-node} è riportato un nodo di bordo (edge) DiffServ. Il Packet Classifier implementa un metodo di classificazione, il Policer effettua un controllo del rispetto del Service Level Agreement ed il Marker provvede ad effettuare una marchiatura con il DSCP appropriato. Abbiamo visto che in un core node vi è un BA Classifier, basato sul DSCP e su altri parametri di livello MAC, da cui si ricava il PHB, e lo scheduler, basato sul PHB. Si tenga presente che il PHB ed il DSCP non sono la stessa cosa: il PHB indica la QoS da assegnare al pacchetto, il DSCP sono sei bit che indicano il colore del pacchetto. Un router ricava il PHB dal BA classifier. L'insieme dei PHB compongono il Behavior Aggregate (BA). Esistono tre tipi di PHB:
+\begin{itemize}
+	\item \textit{Default}. È il Best Effort tradizionale, non vi è QoS.
+	\item \textit{Expedited Forwarding (EF)} -- RFC 2598. Connessioni con basse perdite, basso ritardo e basso jitter. Usa un solo DSCP (101110, 46) per immettere il pacchetto nella coda a più alta priorità nei router di rete (con WFQ ad esempio).
+	\item \textit{Assured Forwarding (AF)} - RFC 2597. Definisce 4 classi di servizio relative, ciascuna con tre livelli di precedenza di scarto; usa 12 distinte combinazioni di DSCP. Il SLA dipende da: classe AF (risorse allocate), livello di traffico di quella classe, drop precedence (in caso di congestione).
+\end{itemize}
+Il PHB AF e quello maggiormente in uso, e definisce una matrice di $4\times 3$ possibili comportamenti (4 classi con 3 probabilità di scarto ciascuna):
+\begin{table}[htbp]
+	\centering
+	\begin{tabular}{l|c|c|c|c|}
+		& Class 1 & Class 2 & Class 3 & Class 4 \\
+		\hline
+		\begin{tabular}{l}Low\\Drop\end{tabular} & \begin{tabular}{c}001010\\$10_{10}$ $12_8$\end{tabular} & \begin{tabular}{c}010010\\$18_{10}$ $22_8$\end{tabular} & \begin{tabular}{c}011010\\$26_{10}$ $32_8$\end{tabular} & \begin{tabular}{c}100010\\$34_{10}$ $42_8$\end{tabular} \\
+		\hline
+		\begin{tabular}{l}Medium\\Drop\end{tabular} & \begin{tabular}{c}001100\\$12_{10}$ $14_8$\end{tabular} & \begin{tabular}{c}010100\\$20_{10}$ $24_8$\end{tabular} & \begin{tabular}{c}011100\\$28_{10}$ $34_8$\end{tabular} & \begin{tabular}{c}100100\\$36_{10}$ $44_8$\end{tabular} \\
+		\hline
+		\begin{tabular}{l}High\\Drop\end{tabular} & \begin{tabular}{c}001110\\$14_{10}$ $16_8$\end{tabular} & \begin{tabular}{c}010110\\$22_{10}$ $26_8$\end{tabular} & \begin{tabular}{c}011110\\$30_{10}$ $36_8$\end{tabular} & \begin{tabular}{c}100110\\$38_{10}$ $46_8$\end{tabular} \\
+		\hline
+	\end{tabular}
+	%\caption{}
+	%\label{tab:PHB-AF}
+\end{table}\\
+La classe è definita nei primi tre bit, mentre la drop precedence è definita nei secondi tre bit. Si noti che la classe non definisce una priorità relativa: è compito dell'ISP definire le associazioni di priorità, ossia i PHB ed i BA.\\
+Vantaggi del DiffServ:
+\begin{itemize}
+	\item Maggiore scalabilità, la complessità viene spostata sull'edge.
+	\item Non è più necessario il protocollo di segnalazione RSVP: minor overhead.
+	\item Clienti diversi possono essere \textquotedblleft partizionati" in varie classi.
+	\item Si integra piuttosto bene con le tecnologie di livello rete.
+\end{itemize}
+Svantaggi del DiffServ:
+\begin{itemize}
+	\item La diffusione dei DiffServ su domini di providers diversi impone accordi di peering bilaterali, difficili da gestire.
+	\item Bisogna non immettere in rete traffico in eccesso, cosa piuttosto complicata. L'Admission Control manca, quindi bisogna usare il \textit{Traffic Engineering}\footnote{Con il termine Traffic Engineering si indicano tutte le tecniche online o offline di misurazione e previsione del traffico atte a prevedere una QoS ed implementare delle tecniche qualsiasi per ottimizzare l'uso della rete e delle risorse.}: si predice il traffico di un determinato BA e si tarano il
+	routing, le precedenze, gli scheduler, etc. in modo da ottenere la QoS voluta.
+	\item È QoS \textit{statistica}, quindi non funziona su reti con poca banda.
+	\item Va comunque rispettata la regola di Van Jacobson: se vogliamo mantenere la QoS su una rete in cui non vi sono metodi di supporto alla QoS (over-provisioning), l'occupazione della rete deve essere $\approx 30\%$. I link non devono comunque superare il 50-70\% della loro capacità, in caso di sistema statistico.
+\end{itemize}
+DiffServ può funzionare bene, con occupazioni della rete anche superiori al 70\%, ma deve essere accoppiato con altri metodi di supporto alla QoS, come MPLS che si occupa della riservazione delle risorse.
+
+\section{MPLS}
+
+
+
+
+
+
 %\section{Network Management}
