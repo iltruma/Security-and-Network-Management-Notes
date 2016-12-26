@@ -526,3 +526,138 @@ Per far si che le label siano correttamente assegnate (sono locali) si devono im
 Esiste una generalizzazione dell'MPLS, il \textit{GMPLS (Generalized MPLS)}. Lo scopo di GMPLS è quello di estendere i concetti di management propri di MPLS a reti di natura diversa e di estendere l'introperabilità. È un set di protocolli di management degli LSP e di setup degli LSP sui diversi tipi di rete. In particolare il focus è sul setup degli LSP, sul mantenimento della QoS e sul miglioramento della fault-tolerance della rete. È tuttavia ancora un work-in-progress, mentre l'adozione di MPLS è un dato di fatto: l'evoluzione e l'uso su larga scala di GMPLS è tuttora un'incognita. Alla fine dei conti non interessa molto, in generale, l'evoluzione di GMPLS perché al momento non vi sono forti necessità pratiche e concrete da parte degli ISP.
 
 \section{Network Management}
+Si consideri il diagramma riportato in Figura \ref{img:management-elements} che rappresenta gli elementi del management e come questi di interfacciano tra loro.
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale = 0.55]{images/management-elements}
+	\caption{Elementi del management.}
+	\label{img:management-elements}
+\end{figure}
+L'utente usa un servizio che è gestito da un Service Provider. Il servizio e fornito tramite il Network, gestito dal Network Operator. Gli SLA regolano i rapporti tra Utente, Service Provider e Network Operator. Supposto che il Network Operator sia \textquotedblleft consapevole" dei servizi che vengono veicolati, il suo obiettivo è quello di gestire la rete, in accordo con lo SLA, tra lui e il Service Provider. Se il Network Operator non e interessato ai servizi, allora lo SLA di riferimento è quello tra lui e l'Utente.
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale = 0.55]{images/management-elements-1}
+	\caption{Elementi del management.}
+	\label{img:management-elements-1}
+\end{figure}\\
+Si consideri adesso la Figura \ref{img:management-elements-1}. I colori nel primo strato sono in base al vendor. Gli elementi di rete vengono gestiti attraverso due layer di management (uno tecnico ed uno funzionale). Il livello funzionale a sua volta è \textquotedblleft guidato" da un livello di service management, che è diretto dal rispetto degli SLA. Il tutto è sottomesso ai livelli di Business Management. L'ultimo strato (quello più a destra) è l'unico ad essere realizzato da esseri umani. Gli allarmi finiscono nei Trouble Tickets che rappresentano il modo in cui, all'interno del Network Management, viene gestito un evento all'interno della rete (anche eventi esterni). I Trouble Tickets finiscono negli Outage Collection \& Computation, che effettuano delle statistiche sui guasti, e nel Performance \& Traffic Computation, che effettuano delle statistiche sugli stati della rete. Ciò che è gestito da ognuno di queste componenti è definito nel SLA. Il management si differenzia in base alle tipologie di rete: vediamole. Il Service Management si occupa della gestione dei Servizi e dei Servers che li operano. Si svolge (quasi) tutto a livello applicativo. Con Backbone Network Management si intendono reti di grandi dimensioni, apparati e links ad altissima velocità (molti clienti). Le Access Network Management sono reti di piccole dimensioni, apparati a bassa velocità; vi è un contatto diretto con gli utenti. Le LAN Network Management sono reti di piccole dimensioni. Vi è un contatto diretto con gli utenti ed una gestione congiunta dei servizi.
+
+È molto importante definire i domini di competenza. È abbastanza chiaro che nella fruizione di un servizio i dati dell'utente attraversano un numero spesso consistente di aree sotto il controllo (management) di diverse entità. Le diverse entità devono essere in contatto tra di loro al fine di mantenere il servizio attivo, altrimenti si rischia di avere un \textquotedblleft rimpallo di competenze". Si ponga attenzione infine al fatto che l'utente stesso è un dominio di competenza, nel senso che gli apparati utente sono spesso gestiti dall'utente stesso. Se si deve offrire un servizio garantito questo elemento di incertezza è estremamente importante (esempi: il jailbreak dell'iPhone, ma anche l'aggiornamento del firmware dei telefoni aziendali).\\
+Per gestire un sistema (una rete o qualsiasi altra cosa) occorre avere un metodo e degli strumenti. Entrambi sono indispensabili e paritetiche. Considerarne solo una porta semplicemente al fallimento. In letteratura si trovano due \textquotedblleft approcci", che in realtà non sono diversi, ma complementari: ISO/OSI, centrato sul metodo, e IETF, centrato sui protocolli; è una falsa dicotomia, in quanto l'uno sfrutta elementi dell'altro.
+
+ISO/OSI definisce 5 \textbf{aree funzionali}, e divide i compiti del Network Management tra di esse. Le aree rappresentano un modello di organizzazione del lavoro ed assolvono al compito di creare un sistema funzionale ed efficace per gestire il Network. ISO/OSI definisce anche un protocollo: il CMIP (e il CMIS), ma non si usano perché troppo complessi. Un punto di forza del CMIP/CMIS è però la \textit{gestione distribuita}, che manca nel modello IETF. Le aree funzionali ISO/OSI sono (F-CAPS to remember):
+\begin{enumerate}
+	\item \textbf{Fault}. Gestione dei guasti e degli allarmi. Comprende: il riconoscimenti tempestivo dei guasti sulla rete (apparati di rete, server, connessioni), log dei guasti e degli allarmi, procedure aziendali dedicate, test diagnostici, il rispetto delle specifiche di contratto sul ripristino dei servizi, gestione del call center dedicato agli allarmi e dei guasti, interfacciarsi con il cliente, allarmi dovuti a guasti effettivi o a superamento di soglie prestazionali.
+	\item \textbf{Configuration}. Gestione delle configurazioni. I principali compiti sono: la raccolta e distribuzione di dati sullo stato delle risorse di rete, l'inizializzazione e modifica delle configurazioni degli apparati, modifiche on-line o off-line della configurazione, variazione della configurazione per l'ottimizzazione delle prestazioni, configurazione di router, firewall, switch, provisioning delle connessioni fisiche.
+	\item \textbf{Accounting}. Gestione degli account e dei costi dei servizi. I principali compiti sono: la determinazione/modifica  dei diritti e caratteristiche di accesso al servizio in base al contratto stipulato, il billing dei servizi (addebitamento dei costi agli utenti finali), la definizione di limiti di utilizzo delle risorse da parte degli utenti, il calcolo di costi combinati per l'impiego di più risorse nell'ambito di un servizio (e.g. problema del roaming in reti cellulari e nelle reti wireless LAN di nuova generazione per l'accesso a Internet per utenti mobili).
+	\item \textbf{Performance}. Gestione e miglioramento delle prestazioni. Comprende: il monitoraggio delle prestazioni della rete in base alle specifiche contenute nel Service Level Agreement con il cliente, i log delle prestazioni monitorate e report agli utenti finali, la modifica dell'allocazione delle risorse della rete per soddisfare le richieste dei clienti, l'adozione di misure preventive per evitare situazioni di congestione o di disservizio.
+	\item \textbf{Security}. Gestione della sicurezza e degli accessi. I principali compiti sono: l'analisi delle aree di rete a rischio (es. database con informazioni sensibili sui clienti), l'adozione di piani per la sicurezza aziendale sia fisica che di rete, il controllo ed il logging degli accessi (passwords, diritti di accesso), test di vulnerabilità sulla rete e sugli ambienti fisici di accesso a server e database.
+\end{enumerate}
+I principi di base sono il \textit{Separation of Concerns} (non duplicare le funzionalità) e l'\textit{Information Hiding} (non esporre l'implementazione, ma solo un servizio). Tra le diverse aree ISO/OSI devono esserci dei SAP (o equivalenti), ovvero semantiche e sintassi da rispettare; una di queste è rappresentata dai Trouble Ticket. Un \textit{Trouble Ticket} è un sistema (qualsiasi) che tiene traccia dei problemi, del loro stato, delle azioni per risolverli e delle deleghe relative al soggetto che ha in carico il problema stesso. È molto importante tenere presente che le aree ISO/OSI \textit{non sono layer di comunicazione} e non si programmano: servono per far lavorare gruppi di persone. Come protocollo si utilizza invece \text{SNMP} (Simple Network Management Protocol), che rappresenta uno dei possibili modi con cui gestire la rete e serve ad interrogare un elemento della rete da un server (il Network Manager).
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale = 0.55]{images/SNMP}
+	\caption{Organizzazione di SNMP.}
+	\label{img:SNMP}
+\end{figure}\\
+In Figura \ref{img:SNMP} è rappresentato il funzionamento di SNMP. In pratica, si opera direttamente sugli elementi \textit{attivi} ed indirettamente sugli elementi \textit{passivi}. La piattaforma di gestione (NMS) raccoglie i dati e agisce sui Network Elements (anche indirettamente). I principali elementi di un sistema di gestione di rete sono: il Network Element da gestire, il Network Management System (stazione di gestione), ed un protocollo di gestione. Nelle WAN i Network Elements sono: nodo Frame Relay o ATM, commutatore SDH, sistema optoelettronico per comunicazioni in fibra ottica, router IP di dorsale, collegamento punto-punto in fibra, etc. In una LAN, invece: server di mail, Web, FTP, stampanti, switch, Access Point per WLAN, database, pc uffici, centraline telefoniche/VoIP, etc. Servirebbe però un livello di \textit{astrazione} per uniformare in qualche modo gli elementi della rete. Dunque, il colloquio tra NMS e Network Element si svolge tra un processo \textquotedblleft Agent" sul Network Element ed un processo \textquotedblleft Manager" sul NMS, come illustrato in Figura \ref{img:SNMP-abstraction}.
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale = 0.55]{images/SNMP-abstraction}
+	\caption{Paradigma Manager/Agent.}
+	\label{img:SNMP-abstraction}
+\end{figure}
+Manager ed Agent colloquiano usando un protocollo di gestione (e.g. SNMP). Manager ed Agent sono due processi software che implementano \textit{oggetti logici}. Ciascun Network Element non è visto come un oggetto reale, ma come una rappresentazione logica di funzionalità, ossia un'astrazione. Questo permette di gestire diversi elementi \textquotedblleft diversi", ma che assolvono alle stesse funzioni (e.g. un wireless access point e un terabit router). Vi sono quindi due importanti parti: il \textit{protocollo di comunicazione} ed il \textit{sistema di rappresentazione logica}.\\
+Il \textit{Management Information Base (MIB)} è il sistema attraverso cui si ha la rappresentazione logica degli oggetti gestiti nel database, organizzato come una \textquotedblleft directory" con struttura ad albero. Le variabili del MIB rappresentano gli attributi degli oggetti, che ne determinano lo stato, come ad esempio il massimo bit-rate di un'interfaccia, il numero di pacchetti in coda, etc. Sia il NMS che l'Agent condividono la conoscenza del MIB. Si noti che il MIB non è un database, ma un Information Base. La \textquotedblleft conoscenza" è relativa alla struttura e non al contenuto. In Figura \ref{img:SNMP-complete} è riportato lo schema completo del paradigma Manager/Agent.
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale = 0.45]{images/SNMP-complete}
+	\caption{Paradigma Manager/Agent.}
+	\label{img:SNMP-complete}
+\end{figure}\\
+Quindi, sostanzialmente, il MIB ha un'organizzazione ad albero, è contenuto nel processo Agent e contiene le variabili relative al Network Element gestito. Il Manager conosce la struttura ad albero del MIB, e la \textquotedblleft naviga" mediante i messaggi SNMP di request; il MIB deriva da una struttura logica ad albero più generale, l'albero delle registrazioni ISO.
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale = 0.55]{images/MIB-example}
+	\caption{Esempio di Management Information Base.}
+	\label{img:MIB-example}
+\end{figure}\\
+Si consideri l'esempio di MIB riportato in Figura \ref{img:MIB-example}. Chiamiamo con il termine \textit{registration tree} una directory di standard. Un elemento è identificato dal suo \textit{Object Identifier (OID)}, ossia la sequenza dei rami per raggiungerlo partendo dalla radice. Ad esempio, Internet OID $:= \{$iso org(3) dod(6) 1$\}$, oppure 1.3.6.1 (in formato numerico), oppure iso.org.dod.1 (in formato simbolico). I MIB SNMP sono estensioni dell'albero delle registrazioni. Il \textquotedblleft MIB name" è l'OID che indica la radice del sotto-albero che contiene il MIB. Ad esempio, \texttt{iso.org.dod.internet.management.mib-2} (1.3.6.1.2.1) è l'identificatore del MIB standard definito per gestire apparati TCP/IP. Sostanzialmente i dati del MIB sono memorizzati nelle foglie dell'albero ed i nodi interni del MIB rappresentano raggruppamenti logici di oggetti. Le entità multi-istanza vengono memorizzate sotto forma di tabelle. Dunque abbiamo delle \textit{variabili scalari}, che hanno un solo valore possibile, e delle \textit{tabelle}, che descrivono oggetti presenti in più istanze, come interfacce, connessioni, etc. Ogni colonna contiene tutti i valori di un attributo per le diverse istanze.
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale = 0.55]{images/mib-2}
+	\caption{Gerarchia di \texttt{mib-2}.}
+	\label{img:mib-2}
+\end{figure}\\
+\texttt{mib-2} (RFC 1213) si occupa della gestione di apparati IP. Inizialmente furono definiti 10 gruppi per 171 \textquotedblleft classi" di oggetti gestiti. Come è possibile notare dalla Figura \ref{img:mib-2} i gruppi obbligatori sono: system, interfaces, IP, ICMP, SNMP. L'implementazione dei gruppi rimanenti è legata al tipo di dispositivo.\\
+Il gruppo \texttt{system} (1.3.6.1.2.1.1) contiene le informazioni principali che fanno riferimento all'intero sistema: sysDescr (1), sysObjectID (2), sysUpTime (3), sysContact (4), sysName (5), sysLocation (6), sysServices (7). Il gruppo \texttt{interfaces} (1.3.6.1.2.1.2) contiene le informazioni principali sulle interfacce: ifNumber (1), ifTable (2) e tutte le opzioni e le operazioni relative alle entry di una tabella. Il gruppo \texttt{ip} contiene le informazioni principali sul livello IP.
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale = 0.55]{images/mib-extensions}
+	\caption{Estensione di MIB.}
+	\label{img:mib-extensions}
+\end{figure}\\
+Il MIB non è chiuso: molti pensano erroneamente che sia difficile da estendere. Infatti, come riportato in Figura \ref{img:mib-extensions}, il MIB si può estendere sotto 1.3.6.1.4.1.xx (ibm, cisco, sun, at\%t, etc.). Inoltre, se il MIB vuole rappresentare come identificare gli oggetti logici, l'SNMP è il protocollo con il quale il Manager e l'Agent comunicano e lavora su UDP. Le primitive SNMP (v2c e v3) sono molto semplici; queste si distinguono nelle primitive \textit{Manager to Agent}
+\begin{itemize}
+	\item GetRequest (reply: Response)
+	\item GetNextRequest (reply: Response)
+	\item GetBulkRequest (reply: Response * n)
+	\item SetRequest (reply: Response)
+\end{itemize}
+e \textit{Agent to Manager}
+\begin{itemize}
+	\item SNMPv2-Trap
+	\item InformRequest (reply: Response)
+\end{itemize}
+Vediamo adesso le versioni di SNMP.
+\begin{itemize}
+	\item \textbf{SNMPv1}. È incompatibile con le versioni successive e mancano \textit{GetBulkRequest} e \textit{InformRequest} (molto lento). Da evitare.
+	\item \textbf{SNMPv2c}. È compatibile con SNMPv3, ma l'autenticazione è debolissima e la privacy è assente. L'autenticazione viene effettuata tramite la conoscenza di una \textit{community}; la community è trasmessa in chiaro ed identifica i permessi \textit{read} e \textit{write}. Da usare solo per \textit{get} (lettura), mai per \textit{set} (scrittura).
+	\item \textbf{SNMPv3}. È usabile e \textquotedblleft sicuro" ed è molto più complicato rispetto all'autenticazione ed alla privacy. Dalla documentazione CISCO:
+	\begin{itemize}
+		\item Ogni utente appartiene ad un gruppo.
+		\item Un gruppo definisce le politiche di accesso per un insieme di utenti. Una politica di accesso identifica ciò che gli oggetti SNMP rendono accessibile per lettura, scrittura o creazione.
+		\item Un gruppo determina una lista di notifiche che i suoi utenti possono ricevere.
+		\item Un gruppo definisce inoltre il modello ed il livello di sicurezza per i suoi utenti.
+	\end{itemize}
+\end{itemize}
+Si consideri la Figura \ref{img:SNMP-role}. SNMP permette la comunicazione, ma le Management Apps comunicano End-to-End. Diventa dunque importante l'API tra SNMP Manager e le applicazioni tra l'Agent e la strumentazione.
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale = 0.55]{images/SNMP-role}
+	\caption{Ruolo di SNMP.}
+	\label{img:SNMP-role}
+\end{figure}\\
+Non sempre si hanno apparati che rispondono a SNMP: potremmo avere che il NMS si trova in una condizione in cui vi è un'interfaccia con una rete SNMP ed un'interfaccia con un'altra rete (e.g. ATM). La soluzione è quella di fare un proxy o delle traslazioni di protocollo.
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale = 0.55]{images/multiprotocol}
+	\caption{Conversione da SNMP a protocollo X.}
+	\label{img:multiprotocol}
+\end{figure}\\
+In Figura \ref{img:multiprotocol} è rappresentata la traslazione da un protocollo qualsiasi a SNMP. Se il protocollo X è di tipo Request/Response, allora serve un proxy; se il protocollo non è di tipo Request/Response, allora serve un gateway. I Proxy costano moltissimo, ma risolvono il problema dell'avere Manager differenti.
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale = 0.55]{images/Ideal-Network-Management-System}
+	\caption{Network Management System ideale.}
+	\label{img:Ideal-Network-Management-System}
+\end{figure}\\
+In Figura \ref{img:Ideal-Network-Management-System} è riportato un Network Management System ideale. Ai livelli più bassi abbiamo i Servizi di Comunicazione: gli strati fisici e quelli di trasporto; nella parte sinistra abbiamo quelli SNMP, nella parte destra quelli del protocollo X col quale vogliamo interfacciarci. Gli strati fisici e quelli di trasporto possono essere benissimo diversi. Sopra ancora abbiamo i Manager SNMP ed un altro Manager qualsiasi. Questi servizi obbediranno a due macro-aree: Eventi in Polling (updates, interrogazioni periodiche) e gli Eventi di Allarme (eventi unsolicited). Questi due oggetti comunicano, tramite delle API, con un Information Model (simile al MIB, ma molto più esteso -- e.g. notifica un router guasto), dei Servizi di Presentazione (e.g. plot di grafici) e delle Applicazioni che automatizzano il tutto. Una Network Management Platform dovrebbe separare il livello di Comunicazione (SNMP o altro) da quello di Applicazione (automatica, console, etc.).
+
+L'SNMP ha alcune limitazioni: i dati sono relativi ad un \textit{istante} ben preciso e l'overhead limita la risoluzione temporale del sampling (polling period). Per ovviare a questo problema si ricorre ad un altro sistema: \textbf{RMON (Remote MONitoring)}, che permette di collezionare, processare e fornire dati storici. RMON effettua l'analisi dei primi due livelli della pila OSI ed RMON 2 (RFC 2021), usato attualmente, è un'ulteriore estensione che effettua:
+\begin{itemize}
+	\item Un'analisi dei livelli più alti (fino al livello applicativo).
+	\item Il miglioramento delle capacità di filtraggio dei pacchetti.
+	\item Il miglioramento delle funzionalità in ambiente Multi-Manager.
+	\item Il miglioramento delle capacità di elaborazione locale dei dati sull'agente.
+\end{itemize}
+RMON si \textquotedblleft interroga" tramite un MIB particolare con SNMP. Altri tools per l'analisi di reti sono: PING, Traceroute, mtr (traceroute + ping), ICMP, IPFIX, etc. \textit{IPFIX (Internet Protocol Flow Information eXport)} (RFC 5101) è un protocollo \textit{push} che deriva da NetFlow v9 (Cisco). In pratica la \textit{probe} analizza il traffico ed invia i dati ad un Collector tramite IPFIX. Dall'RFC: \textquotedblleft \textit{IPFIX considers a flow to be any number of packets observed in a specific timeslot and sharing a number of properties}". Altri strumenti, Network Management Systems, che permettono di fare Network Management sono:
+\begin{itemize}
+	\item \textbf{Nagios}. \textquotedblleft \textit{Nagios is a powerful monitoring system that enables organizations to identify and resolve IT infrastructure problems before they affect critical business processes.}"
+	\item \textbf{OpenNMS}. \textquotedblleft \textit{OpenNMS is the world's first enterprise grade network management application platform developed under the open source model.}"
+	\item \textbf{Cacti}. \textquotedblleft \textit{Cacti is a complete network graphing solution designed to harness the power of RRDTool's data storage and graphing functionality.}"
+	\item \textbf{Zenoss}. \textquotedblleft \textit{Zenoss assures IT service delivery to applications, business services and real-time physical, virtual, and cloud-based infrastructures.}"
+\end{itemize}
+È importante controllare sempre che: sia supportato l'uso di Trouble Tickets, sia possibile definire utenti con privilegi diversi (Aree ISO/OSI) e che non sia un tool \textquotedblleft over-engineered" (cerca di far tutto, facendolo male). È comunque molto importante utilizzare sempre il terminale.
+
+L'aspetto più complicato nel Network Management è il fattore umano: è difficile insegnare a lavorare alle persone, soprattutto sotto stress; è importante avere un metodo con cui affrontare le cose (considerazione personale del Prof. Pecorella).
