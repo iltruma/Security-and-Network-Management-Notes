@@ -325,8 +325,8 @@ Un possibile attacco a questo algoritmo potrebbe essere realizzabile mediante un
 	\caption{Cifratura di Feistel.}
 	\label{img:Feistel}
 \end{figure}\\
-In Figura \ref{img:Feistel} è riportato il processo di cifratura di Feistel. La struttura inventata da Feistel ha il vantaggio che la cifratura e decifratura sono operazioni molto simili, spesso identiche, e che basta invertire il funzionamento del gestore della chiave per ottenere l'operazione inversa: quindi i circuiti di cifratura e decifratura spesso sono gli stessi. Dalla chiave $K$ si generano una serie di sottochiavi $K_i$, con $i=0,\dots,n$, attraverso una funzione generatrice. Si eseguono quindi una serie di fasi di cifratura che hanno come parametro $K_i$ ed il risultato della fase precedente. Vediamo brevemente nel dettaglio i passi di cifratura e decifratura.\\
-Sia $F$ la funzione dei passaggi e siano $K_0, K_1, \dots, K_n$ le sottochiavi rispettivamente dei passaggi $0,\dots,n$. Le operazioni basilari sono dunque le seguenti:
+In Figura \ref{img:Feistel} è riportato il processo di cifratura di Feistel. La struttura inventata da Feistel ha un vantaggio: cifratura e decifratura sono operazioni molto simili, spesso identiche, e basta invertire il funzionamento del gestore della chiave per ottenere l'operazione inversa; i circuiti di cifratura e decifratura, dunque, spesso sono gli stessi. Dalla chiave $K$ si generano una serie di sottochiavi $K_i$, $i=0,\dots,n$, attraverso una funzione generatrice. Si eseguono quindi una serie di fasi di cifratura che hanno come parametro $K_i$ ed il risultato della fase precedente. Vediamo brevemente nel dettaglio i passi di cifratura e decifratura.\\
+Sia $F$ la funzione dei passaggi e siano $K_0, K_1, \dots, K_n$ le sottochiavi rispettivamente dei passaggi $0,\dots,n$. Le operazioni basilari sono le seguenti:
 \begin{enumerate}
 	\item Dividere i dati in ingresso in due parti uguali $(L_0, R_0)$.
 	\item Per ogni round $i=1,2,\dots,n$, calcola
