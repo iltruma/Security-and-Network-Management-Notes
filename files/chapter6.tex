@@ -1,3 +1,4 @@
+%!TEX root = ../Security&NetworkManagement.tex
 \chapter{Sicurezza delle reti wireless}
 In questo capitolo verrà data inizialmente una breve panoramica sulle tecnologie wireless, seguita da una descrizione dettagliata del protocollo 802.11 (Wi-Fi) e delle sue insicurezze.
 
@@ -67,13 +68,13 @@ Gli algoritmi di tipo stream sono molto veloci e facili da implementare; riutili
 	\centering
 	\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=5.8cm,
 	semithick, scale = 0.6, transform shape]
-	
+
 		\node[rect,align=center] (1) {Generatore di numeri\\pseudocasuali};
 		\node[] (2) [left of=1] {($K$, IV)};
 		\node[state] (3) [right of=1] {$+$};
 		\node[] (4) [above of=3,yshift=-3cm] {Testo in chiaro};
 		\node[] (5) [right of=3,xshift=-2cm] {Testo cifrato};
-		
+
 		\path (2) edge node {} (1)
 		(1) edge node {Keystream} (3)
 		(4) edge node {} (3)
@@ -117,7 +118,7 @@ Cifrare anche il CRC significa che se un attaccante non conosce la chiave di cif
 	\item Una volta ricevuto il pacchetto, si estrae l'IV dall'header e si utilizza per ricalcolare il \textit{keystream} (attraverso la chiave WEP); si esegue uno XOR con il pacchetto e si ricava il payload in chiaro concatenato al CRC.
 	\item A questo punto si ricalcola il CRC dal payload in chiaro e si confronta con quello ricevuto. Se i due valori coincidono, la trasmissione è avvenuta senza manomissioni.
 \end{enumerate}
-Così facendo otteniamo un controllo di integrità sul payload.
+Così facendo otteniamo un controllo di integrità sul payload.\\
 
 Facciamo adesso alcune precisazioni e note sul WEP. (a) L'autenticazione dei pacchetti non utilizza algoritmi a chiave pubblica/privata; dovrebbe invece esserci sempre un segreto condiviso in precedenza, dunque un canale sicuro. (b) Alcuni AP implementano un filtro sugli indirizzi MAC da far accedere alla rete per evitare accessi indesiderati. (c) Non esiste controllo di unicità dei pacchetti, due pacchetti possono essere identici. (d) Non esiste controllo di sequenza dei pacchetti, il valore di IV viene deciso dagli apparati senza una politica definita (e.g. randomica, incrementale, $\dots$). Un attaccante può ripetere un pacchetto anche senza conoscerne il significato: i protocolli di livello superiore hanno il compito di gestire i dati, accettandoli o rifiutandoli.
 
@@ -291,7 +292,7 @@ Come già accennato vengono divisi i ruoli di \textit{authenticator} e AP; quest
 \begin{figure}[htbp]
 	\centering
 		\begin{tikzpicture}[node distance=4cm]
-			\node (supplicant) [phase,label=below:Supplicant] {\includegraphics[scale=0.2]{images/supplicant}};	
+			\node (supplicant) [phase,label=below:Supplicant] {\includegraphics[scale=0.2]{images/supplicant}};
 			\node (AP) [phase, right= of supplicant,label=below:Authenticator] {\includegraphics[scale=0.2]{images/AP}};
 			\draw [undirectedarrow,draw=red] (supplicant) -- node[]{}(AP);
 			\node (AS) [phase, right= of AP,label=below:Authentication Server] {\includegraphics[scale=0.2]{images/authentication-server}};
