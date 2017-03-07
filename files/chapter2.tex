@@ -39,6 +39,17 @@ Dato un messaggio $x$, applicando lo SHA otteniamo la \textit{signature} (\texti
 Supponiamo che $A$ invii a $B$ il messaggio $M$ e che invii separatamente anche il digest $d=h(M)$. $B$ riceve quindi $M$ e $d$, e ricalcola $d'=h(M)$: se $d=d'$, allora il messaggio non è stato modificato durante il percorso. La domanda che sorge spontanea è quindi: $E$ cosa può fare? Se $E$ intercetta solo $M$ può provare a cambiarlo, ma quando $B$ riceverà anche $d$, l'hash non sarà più corrispondente e dunque si accorgerà della modifica avvenuta. Per riuscire a modificare il messaggio da $M$ a $M'$, $E$ dovrebbe riuscire ad intercettare anche $d$ per cambiarlo in $h(M')$.\\
 Un'applicazione tipica di hash è quella della distribuzione di immagini di file eseguibili: ogni qualvolta viene scaricato un eseguibile è necessario essere sicuri che sia identico al file che il produttore ha generato; anche un solo bit di differenza può provocarne il mancato funzionamento. Con le ISO dei sistemi operativi, infatti, spesso vi viene dato anche il codice MD5 del file, ovvero il digest creato con la funzione hash MD5.
 \end{example}
+
+\newpage
+Alcuni esempi di fuzioni hash :
+\begin{itemize}
+\item \textbf{MD5}: digest da 128 bit (il più veloce ma non sicuro)
+\item \textbf{SHA-0}: digest da 160 bit (non sicuro)
+\item \textbf{SHA-1}: digest da 160 bit (non sicuro a Febbraio 2017)
+\item \textbf{SHA-2}: SHA-224, SHA-256, SHA-512 (sicuro)
+\item \textbf{SHA-3}: SHA3-256, SHA3-512 (sicuro)
+\end{itemize}
+
 \noindent
 Vediamo adesso i \textit{requisiti} che deve soddisfare una funzione hash $h$.
 \begin{itemize}
@@ -108,7 +119,7 @@ L'idea (Figura \ref{img:asymmetric_encryption}) è che ciò che viene cifrato co
 \end{figure}\\
 Ricapitolando, ogni utente ha due chiavi legate in modo inscindibile che possono essere generate insieme da programmi appositi: una chiave viene resa pubblica (possibilmente in un elenco pubblico accessibile da chiunque), mentre l'altra è in possesso del solo utente. Non è necessario concordare preventivamente una chiave di cifratura comune per scambiarsi un documento riservato. La chiave privata di un utente è sempre segreta.
 
-Le chiavi pubblica e privata sono invertibili: se $A$, che è l'unico possessore della chiave $Priv_A$, usa questa chiave privata per cifrare un messaggio, allora chiunque possegga $Pub_A$ può decifrarlo. Siccome $Pub_A$ è pubblica la possiedono tutti, dunque il messaggio è decifrabile da chiunque. Ma, dato che solo $A$ è in possesso di $Priv_A$, chi decifra il messaggio è sicuro che il messaggio provenga direttamente da $A$. Con questo utilizzo la cifratura a chiave asimmetrica non serve a garantire segretezza ma serve a garantire l'autenticazione del mittente. Questo tipo di uso si chiama \textbf{firma digitale} (Figura \ref{img:digital_signature}) e fornisce l'autenticazione e non la ripudiabilità dei dati.
+Le chiavi pubblica e privata sono invertibili: se $A$, che è l'unico possessore della chiave $Priv_A$, usa questa chiave privata per cifrare un messaggio, allora chiunque possegga $Pub_A$ può decifrarlo. Siccome $Pub_A$ è pubblica la possiedono tutti, dunque il messaggio è decifrabile da chiunque. Ma, dato che solo $A$ è in possesso di $Priv_A$, chi decifra il messaggio è sicuro che il messaggio provenga direttamente da $A$. Con questo utilizzo la cifratura a chiave asimmetrica non serve a garantire segretezza ma serve a garantire l'autenticazione del mittente. Questo tipo di uso si chiama \textbf{firma digitale} (Figura \ref{img:digital_signature}) e fornisce l'autenticazione e non la ripudiabilità dei dati. Posso quindi mandare messaggi in chiaro e accodare l'hash cifrato del messaggio. Questo perchè posso verificare sempre che l'HMAC è effettivamente mandato da A (autenticazione, come già detto in precedenza).
 \begin{figure}[htbp]
 	\centering
 	\includegraphics[scale = 0.5]{images/digital_signature}
@@ -245,7 +256,7 @@ Nel seguito vedremo alcuni degli algoritmi crittografici più famosi ed utilizza
 \subsection{RSA}
 RSA è un algoritmo di crittografia asimmetrica inventato nel 1977 da Ronald \textbf{R}ivest, Adi \textbf{S}hamir e Leonard \textbf{A}dleman utilizzabile per cifrare o firmare informazioni. Vediamone brevemente l'idea.
 
-Dati $p, q$ e $n=p\cdot q$, dato $m$ un numero di dimensione inferiore a $n$ ($m$ può essere la codifica binaria di qualsiasi testo in chiaro), si dimostra che se $e, d$ sono inversi moltiplicativi modulo $\phi(n)$, ossia $ed=1\bmod\phi(n)$, allora
+Dati $p, q$, primi tra loro e abbastanza grandi, e $n=p\cdot q$, dato $m$ un numero di dimensione inferiore a $n$ ($m$ può essere la codifica binaria di qualsiasi testo in chiaro), si dimostra che se $e, d$ sono inversi moltiplicativi modulo $\phi(n)$, ossia $ed=1\bmod\phi(n)$, allora
 \begin{align*}
 	m^{ed}&\bmod n && \\
 	=m^{1+k\phi(n)}&\bmod n && \\
@@ -282,7 +293,7 @@ Nello scambio di chiavi Diffie-Hellman entrambi gli utenti $A$ e $B$ possiedono 
 	\item $A$ calcola $K_a=Y_b^{X_a}\bmod p = (\alpha^{X_b})^{X_a}\bmod p = \alpha^{X_b X_a}\bmod p$,
 	\item $B$ calcola $K_b=Y_a^{X_b}\bmod p = (\alpha^{X_a})^{X_b}\bmod p = \alpha^{X_a X_b}\bmod p$.
 \end{enumerate}
-Ma $K_a = K_b$, quindi $A$ e $B$ si sono scambiati una chiave segreta \textit{senza avere nessuna credenziale comune}. Dunque, un attaccante che intercetta solo $Y_a$ e $Y_b$ non è in grado di calcolare il logaritmo discreto e quindi non può ricavare la chiave.
+Ma $K_a = K_b$, quindi $A$ e $B$ si sono scambiati una chiave segreta \textit{senza avere nessuna credenziale comune}. Dunque, un attaccante che intercetta solo $Y_a$ e $Y_b$ non è in grado di calcolare il logaritmo discreto e quindi non può ricavare la chiave. Oltre a $Y_a$ e $Y_b$ vengono scambiati ovviamente anche $\alpha$ e $p$, ma non è un problema visto che il segreto risiede in $X_a$ e $X_b$.
 
 Si dimostra abbastanza facilmente che lo scambio di chiavi Diffie-Hellman non è sicuro contro gli attacchi man-in-the-middle poiché un attaccante $D$ è in grado di modificare il traffico tra $A$ e $B$:
 \begin{itemize}
@@ -341,7 +352,9 @@ La decifratura si ottiene con:
 	R_{i-1} &= L_i \\
 	L_{i-1} &= R_i \oplus f(L_i, K_i)
 \end{align*}
-Un vantaggio di questo modello è che le funzioni $f$ usate sono \textit{non invertibili} e possono essere molto complesse. Il diagramma in Figura \ref{img:Feistel} mostra la cifratura e la decifratura del messaggio. Si noti l'inversione della chiave di sessione per la decifratura: è l'unica differenza rispetto alla cifratura del messaggio. Tutti gli algoritmi a blocchi moderni come AES e DES usano questo schema di cifratura.
+Un vantaggio di questo modello è che le funzioni $f$ usate sono \textit{non invertibili} e possono essere molto complesse. Il diagramma in Figura \ref{img:Feistel} mostra la cifratura e la decifratura del messaggio. Si noti l'inversione della chiave di sessione per la decifratura: è l'unica differenza rispetto alla cifratura del messaggio. Tutti gli algoritmi a blocchi moderni come AES usano questo schema di cifratura. 
+
+\textbf{Oss.} Il DES non è basato sulla cifratura di Feistel, ma è una rete a sostituzione e permutazione a blocchi.
 
 \section{Altri algoritmi}
 
@@ -386,3 +399,44 @@ Con questa nuova rappresentazione della curva è possibile rappresentare i messa
 Ricapitolando, quindi, un sistema crittografico basato su curva ellittica può essere definito prendendo un numero primo come massimo, un'equazione di una curva ellittica ed un punto \textit{pubblico} sulla curva. Una \textit{chiave privata} è un numero $priv$ ed una chiave pubblica è ottenuta facendo \textquotedblleft rimbalzare" il punto pubblico su sé stesso $priv$ volte. Per il calcolo della chiave privata a partire dalla chiave pubblica in questo tipo di sistema crittografico deve essere utilizzata la funzione logaritmo discreto sulla curva ellittica: questa è la \textit{funzione trappola} che cercavamo. Tuttavia, proprio il fatto che la matematica che sta dietro a queste idee non è ben nota, si sospetta che la scelta \textquotedblleft errata" di alcuni parametri iniziali (ad esempio $a, b$ nell'equazione della curva) porti a dei risultati non molto robusti. Non è stato dimostrato, ma solo ipotizzato, che alcuni numeri portino a risultati veramente facili da decodificare.
 
 La crittografia ellittica è estremamente facile da implementare ed attualmente è utilizzata in molti ambiti eccetto che per la codifica di dati sensibili, a causa proprio della mancanza di conoscenza della matematica alla base.
+
+\newpage
+\section{Organizzazione di una rete con certificati (esempio)}
+La nostra rete, mostrata in Figura \ref{img:network_example1}, è composta da:
+\begin{itemize}
+\item Una rete di computer fissi per gli utenti
+\item Un server per applicativi web necessari aigli utenti
+\item Un server per la posta elettronica
+\item Dei possibili utenti remoti (roadwarrior)
+\end{itemize}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale = 0.4]{images/network_example1.png}
+	\caption{Esempio di Rete}
+	\label{img:network_example1}
+\end{figure}
+
+Nella nostra rete vogliamo assicurare che non sia possibile collegari alla rete interna se non utilizzando i client fissi della rete dal personale autorizzato. I servizi di webserver devono essere accessibili solo dai terminali della rete e la posta deve essere certificata in modo che gli utenti possano inviare e ricevere le email in modo semplice e sicuro. Inoltre tutto quello che può fare un utente interno alla rete lo deve anche poter fare il roadwarrior. Si può vedere come questi requisiti siano impegnativi da implementare e rispettare. \\
+
+Per prima cosa abbiamo bisogno di una CA. Questa deve essere il più possibile isolata dalla rete e non accessibile dall'esterno o dagli utenti. La CA distribuisce certificati (e le rispettive CRL) agli utenti e ai server.  In particolare abbiamo bisogno dei seguenti certificati:
+\begin{itemize}
+\item Uno per il webserver (protocollo HTTPS)
+\item Uno per il server imap e smtp per la posta elettronica
+\item Uno per l'autenticazione degli utenti
+\item Uno per la VPN in modo che i roadwarrior possano usare la rete interna
+\item Uno per ogni macchina client, per ogni utente e per ogni roadwarrior
+\end{itemize}
+
+\newpage 
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale = 0.4]{images/network_example2.png}
+	\caption{Rete finale con i certificati}
+	\label{img:network_example2}
+\end{figure} 
+
+Dove devo mettere i certificati segli utenti? Ogni macchina nella rete interna deve possedere un certificato non accessibile dall’utente. All’avvio la macchina dovrà produrre un’autenticazione con un server di autenticazione in modo da poter accedere allo switch a cui è collegata. C’è bisogno quindi di uno switch compliant con IEEE 802.1X e di un server RADIUS (vd. Capitolo 6). Ogni utente riceve un certificato (in una smartcard, o in un token di qualisasi tipo), i terminali utenti devono avere un lettore hardware. Quando l’utente arriva alla postazione si autentica con il token allo stesso server RADIUS e ottiene il login. Lo stesso certificato verrà utilizzato dai client di posta elettronica e dal webserver. Volendo, oltre al certificato, il login può essere legato anche ad una password, utilizzabile direttamente dal token crittografico per sbloccarsi. Infine tutti gli utenti, i server e le VPN deveno avere il certificato della CA insieme alla CRL. La rete finale è illustrata in Figura \ref{img:network_example2}.
+
+

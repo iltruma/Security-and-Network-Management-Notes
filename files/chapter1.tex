@@ -72,7 +72,7 @@ Una volta terminata la parte di gestione del rischio, si procede con la valutazi
 			& \multicolumn{1}{c}{Med} & \multicolumn{1}{c}{High} \\
 		\end{tabular}
 	\end{center}
-	Le righe (asse $y$) contengono la probabilità che un evento $e$ accada ($\mathcal{P}(e)\in\{\text{low, med, high}\}$), mentre le colonne (asse $x$) contengono il risultato (outcome) dell'evento. Una volta costruita la matrice, questa viene suddivisa in tre parti tracciando due diagonali; chiamiamo la parte più bassa $A$, quella nel mezzo $B$ e quella più in alto $C$. Dobbiamo quindi focalizzarci in primis sulla parte $C$ per cercare di portare quanto più possibile nella parte $B$: questo può essere effettuato mediante la riduzione della probabilità del verificarsi di un evento o tramite la riduzione dell'outcome. Analizziamo poi la parte $A$ ed in questo caso abbiamo due possibilità:
+	Le righe (asse $y$) contengono la probabilità che un evento $e$ accada ($\mathcal{P}(e)\in\{\text{low, med, high}\}$), mentre le colonne (asse $x$) contengono il risultato (outcome) dell'evento (ovvero quanto è il danno dell'evento sul mio asset). Una volta costruita la matrice, questa viene suddivisa in tre parti tracciando due diagonali; chiamiamo la parte più bassa $A$, quella nel mezzo $B$ e quella più in alto $C$. Dobbiamo quindi focalizzarci in primis sulla parte $C$ per cercare di portare quanto più possibile nella parte $B$: questo può essere effettuato mediante la riduzione della probabilità del verificarsi di un evento o tramite la riduzione dell'outcome. Analizziamo poi la parte $A$ ed in questo caso abbiamo due possibilità:
 	\begin{enumerate}
 		\item I rischi identificati non sono correlati al lavoro.
 		\item I rischi identificati sono correlati; in questo caso, o abbiamo sovrastimato l'evento o abbiamo speso troppo per la sicurezza.
@@ -89,8 +89,9 @@ Una volta terminata la parte di gestione del rischio, si procede con la valutazi
 		\item non è semplice quantificare il valore di un asset;
 		\item l'ARO è una probabilità che non è semplice da stimare;
 		\item non è semplice valutare l'EF.
+		\item è difficile creare una tabella di importanza dei rischi come in quello qualitativo.
 	\end{itemize}
-	Il prodotto di questi ultimi tre valori fornisce l'ALE, in cui l'errore è amplificato dal momento che anche gli errori di stima di ogni singolo fattore sono moltiplicati. Se quindi non vi è una sufficiente accuratezza nella stima di questi tre parametri otteniamo delle misure troppo grossolane. Come ultima cosa si tenga presente che l'ALE è un valore medio, dunque per avere più precisione nella stima tipicamente viene utilizzata la moda (il valore più alto nella distribuzione).
+	Il prodotto di questi ultimi tre valori fornisce l'ALE, in cui l'errore è amplificato dal momento che anche gli errori di stima di ogni singolo fattore sono moltiplicati. Se quindi non vi è una sufficiente accuratezza nella stima di questi tre parametri otteniamo delle misure troppo grossolane. Come ultima cosa si tenga presente che l'ALE è un valore medio, dunque per avere più precisione nella stima tipicamente viene utilizzata la moda (il valore più alto nella distribuzione). 
 \end{enumerate}
 A questo punto entra in gioco la \textbf{risk analysis} (che indica cosa produce il rischio sull'asset) che presentiamo mediante il modello grafico (Figura \ref{img:risk_analysis_model}); descriviamolo brevemente. 
 \begin{figure}[htbp]
