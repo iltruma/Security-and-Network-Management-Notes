@@ -64,11 +64,31 @@ Le regole sono organizzate in catene e tabelle: una catena identifica il punto a
 	\includegraphics[scale = 0.4]{images/firewall-logic-scheme}
 	\caption{Schema logico del firewall.}
 	\label{img:schema-logico-firewall}
-\end{figure}\\
-In Figura \ref{img:schema-logico-firewall} è riportato uno schema logico del firewall. Nella parte di pre-routing entrano tutti i pacchetti in ingresso al firewall, in quella di post-routing transitano tutti i pacchetti in uscita dal firewall, nella parte di output transitano i pacchetti generati in uscita dal firewall, in quella di input i pacchetti in ingresso diretti al firewall ed infine, in quella di forward, transitano i pacchetti in ingresso al firewall ma provenienti dall'esterno. Si noti che non è possibile accorpare forward, postrouting e output sia per un motivo di duplicazione del codice, sia per il fatto che l'attaccante potrebbe provenire dall'interno.
+\end{figure}
+\newpage
+In Figura \ref{img:schema-logico-firewall} è riportato uno schema logico delle catene in un firewall. 
+\begin{itemize}
+\item \textbf{PREROUTING}: nella catena di prerouting entra tutto il traffico in ingresso al firewall. Questa catena viene processata prima di qualsiasi decisione di routing.
+\item \textbf{INPUT}: in questa catena entra tutto il traffico in ingresso che deve essere reindirizzato (routed) se il pacchetto è destinato al sistema locale.
+\item \textbf{FORWARD}: in questa catena entra tutto il traffico in ingresso che deve essere reindirizzato (routed) se il pacchetto è destinato ad un altro host della rete. 
+\item \textbf{OUTPUT}: in questa catena è generato tutto il traffico in uscita dal firewall.
+\item \textbf{POSTROUTING}: questa catena è attivata da qualsiasi traffico in uscita o forwarded e successivamente reindirizzata (routing).
+\end{itemize}
 
-Con il termine \textquotedblleft filtrare" ci possiamo riferire a più azioni intraprese dal firewall: scartare (Drop), lasciare passare (Accept), modificare (Mangle), lasciare passare ma riportare un messaggio nei file di log (Log), etc. Si noti inoltre che Netfilter/Iptables è \textit{stateful}, dunque vi è un modulo che ricostruisce il flusso di pacchetti correlati, ad esempio frammenti dello stesso pacchetto IP (Conntrack). Per distinguere gruppi di azioni simili, le regole vengono divise in tabelle, ovvero raggruppamenti di regole che svolgono la stessa funzione (Conntrack, Mangle, NAT, Filter). All'interno di ogni catena vengono richiamate regole appartenenti a tabelle diverse.
-\begin{figure}
+\textbf{Oss:} Si noti che non è possibile accorpare FORWARD, POSTROUTING e OUTPUT sia per un motivo di duplicazione del codice, sia per il fatto che l'attaccante potrebbe provenire dall'interno. Inoltre se il firewall protegge solo se stesso non ho bisogno della catena di forwarding. Se per esempio voglio filtrare i pacchetti in uscita, quale catena scelgo? Scelgo OUTPUT perchè POSTROUTING non è associato alla tabella filter.\\
+
+Con il termine \textquotedblleft filtrare" ci possiamo riferire a più azioni intraprese dal firewall:
+\begin{itemize}
+\item \textbf{ACCEPT}: accetto il pacchetto. Il risultato pratico di questa accettazione dipende da quale catena sta processando il pacchetto. . Per esempio, un pacchetto che è accettato dalla catena INPUT può essere ricevuto dal sistema, un pacchetto accettato dalla catena OUTPUT può essere inoltrato dal sistema, e un pacchetto accettato dalla catena FORWARD potrà essere smistato dal sistema a un'altra destinazione, un pacchetto "accettato" in una catena della tabella nat non subirà alterazioni.
+\item \textbf{DROP}: il pacchetto venga scartato senza effettuare ulteriori operazioni su di esso e senza avvertire il mittente.  Questo comportamento aumenta la sicurezza di un sistema in quanto un potenziale nemico non potrà neppure determinare se il sistema esiste effettivamente.
+\item \textbf{QUEUE}:  il pacchetto sia inserito in una coda, in modo che possa essere processato da una applicazione. Se non vi è nessuna applicazione che processa i messaggi in coda, questo obiettivo sarà equivalente all'obiettivo DROP.
+\item \textbf{RETURN}: per una regola nella catena predefinita, viene eseguita la politica della catena; per una regola definita dall'utente, l'attraversamento delle regole continua nella catena chiamante, subito dopo il punto in cui è presente la catena che ha causato il RETURN, analogamente a come accade nella chiamate a funzione.
+\item \textbf{REJECT}: ha lo stesso effetto di DROP con l'eccezione che viene spedito un pacchetto di errore ICMP al mittente del pacchetto. Esso è principalmente utilizzato nelle catene INPUT o FORWARD della tabella filtro. Un pacchetto di errore può indicare esplicitamente che il pacchetto è stato filtrato.
+\item \textbf{LOG}: la ricezione del pacchetto viene annotata inviando un messaggio sul SysLog. Questo obiettivo può essere utile per permettere all'amministratore di sapere quali pacchetti vengono filtrati o allo sviluppatore per controllare il corretto funzionamento del sistema.
+\end{itemize}
+
+Per distinguere gruppi di azioni simili, le regole vengono divise in tabelle, ovvero raggruppamenti di regole che svolgono la stessa funzione (Conntrack, Mangle, NAT, Filter). All'interno di ogni catena vengono richiamate regole appartenenti a tabelle diverse. Si noti inoltre che Netfilter/Iptables è \textit{stateful}, dunque vi è un modulo che ricostruisce il flusso di pacchetti correlati, ad esempio frammenti dello stesso pacchetto IP (Conntrack).
+\begin{figure}[h]
 	\makebox[\textwidth]{
 		\includegraphics[width=1.3\linewidth]{images/nfk-traversal.pdf}
 	}
