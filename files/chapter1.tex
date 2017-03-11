@@ -10,7 +10,7 @@ Raggiungere questi obiettivi, tuttavia, non è così semplice.\\
 È molto comune, inoltre, confondere il concetto di \textit{security} con quello di \textit{safety}:
 \begin{itemize}
 	\item \textbf{Security}. Con questo termine si esprime l’insieme delle misure finalizzate a \textit{prevenire} o \textit{ridurre} la probabilità che un dato evento non desiderato accada.
-	\item \textbf{Safety}. Con questo termine si intende invece la \textquotedblleft risposta" del sistema al verificarsi di un particolare evento indesiderato. La safety è legata a pericoli/danni a persone, e non solo a cose.
+	\item \textbf{Safety}. Con questo termine si intende invece la \textquotedblleft risposta" del sistema al verificarsi di un particolare evento indesiderato. La safety è strettamente legata a pericoli/danni a persone, e non solo a cose.
 \end{itemize}
 In generale si cerca security per la safety di un sistema (e.g. torre di controllo in un aeroporto). Inoltre, è sempre bene tenere presenti i \textit{costi} legati alla sicurezza: la sicurezza non è gratuita. Questa infatti implica una complessità maggiore del sistema, maggiori costi operazionali e di implementazione ed il cambiamento del workflow (alcune cose potrebbero non essere fattibili, o potrebbero essere realizzate con limitazioni).
 
@@ -38,13 +38,17 @@ Gli EAFs più usati sono i seguenti:
 \end{itemize}
 TOGAF e COBIT sono quelli più usati in imprese non militari. In Figura \ref{img:EAF}(b) è riportato l'EAF TOGAF: questo, come altri EAFs, adotta un modello \textquotedblleft iterativo" in cui ad ogni fase si raffinano e si precisano i concetti precedenti. Gli aspetti ingegneristici/tecnici sono racchiusi principalmente nei punti F, G e H. Gli EAF moderni hanno una struttura circolare:
 \begin{itemize}
-	\item Passo 0. Preliminari. Statements che descrivono l'azienda.
+	\item Passo 0. Preliminari. Statements che descrivono e formalizzano lo scopo dell'azienda .
 	\item Passo A. Dal primo passo si creano le Architecture Vision (ovvero il \textit{come} è strutturata l'azienda)
+	\item Passo B. Come sta in piedi la mia organizzazione (es. piano finanziario)
 	\item Passo C. Information System: che cosa ho bisogno di sapere? Quali informazioni? Quali limiti?
-	\item Passo D. Tecnology Architecture, devo riuscire a fare l'information e l'architecture (Problema dei Requisiti)
+	\item Passo D. Tecnology Architecture, devo riuscire a fare l'information e l'architecture che mi sono prefissato di rispettare negli step precedenti -> Problema dei Requisiti
 \end{itemize}
-Gli altri passi implicano la gestione, la manutenzione e l'implementazione dell'architettura. Lo schema è molto simile alla programmazione agile (Modello a V). Dopo il passo D si dovrebbe avere un sistema funzionante; le fasi successive servono per dare vita all'azienda. Gli EAF producono dei documenti standard che descrivono cosa viene fatto in ogni fase. Si noti che ogni step produce uno o più requirements che il concetto dopo deve risolvere, altrimenti si ritorna indietro. Quasi tutti i framework pongono l'accento sui dati piuttosto che sulle applicazioni o sulla tecnologia. A tal proposito viene introdotto il concetto di \textit{asset}, definito nel passo A.
+Gli altri passi implicano la gestione, la manutenzione e l'implementazione dell'architettura. Lo schema è molto simile alla programmazione agile (Modello a V). Dopo il passo D si dovrebbe avere un sistema funzionante; le fasi successive servono per dare vita all'azienda. Gli EAF producono dei documenti standard che descrivono cosa viene fatto in ogni fase. Si noti che ogni step produce uno o più requirements che il concetto dopo deve risolvere, altrimenti si ritorna indietro. Un modello molto simile agli EAF è la programmazione Agile.
 
+\textbf{\textit{Oss.}} Stiamo paralndo degli EAF perchè se so muovermi con questi concetti, allora so muovermi anche nella sicurezza di reti. Infatti, per tutta la security, ho continui requirements che la rete deve rispettare.
+
+Quasi tutti i framework pongono l'accento sui dati piuttosto che sulle applicazioni o sulla tecnologia. A tal proposito viene introdotto il concetto di \textit{asset}, definito nel passo A.
 Si definisce \textbf{asset} una qualsiasi risorsa dell'impresa che abbia o rappresenti un valore importante per l'azienda stessa; può essere rappresentato da: dati, componenti tecnologici (hardware) o componenti applicativi (applicazioni).\\
 Per garantire la sicurezza su un asset è necessario che tutta la catena dell'EAF corrispondente sia implementata in maniera affidabile. Un asset ha anche delle proprietà che possono essere intrinseche, desiderate o imposte dalla legge (e.g. i dati personali sono sottoposti alla legge sulla privacy). Tali proprietà sono \textquotedblleft esportate" agli asset che interagiscono con l'asset in questione. Lo scopo principale della sicurezza è quello di proteggere gli asset. Gli assets sono di due tipi:
 \begin{itemize}
