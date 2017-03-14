@@ -280,6 +280,8 @@ Gli stessi problemi computazionalmente intrattabili utilizzati in RSA (fattorizz
 	\item DSA: schema di firma digitale basato su logaritmi discreti.
 \end{itemize}
 
+\textbf{\textit{Nota:}} Per evitare la generazione di diversi $N=pq$ per ogni utente, si può pensare che esista un unità centrale che assegna $n$ ad ogni utente $i$ con una chiave pubblica $(e_i, n)$ e una chiave privata $(d_i, n)$. A prima vista si può pensare che funzioni: il testo cifrato $c=m^(e_a)mod(n)$ di Alice non può essere decriptato da Bob perchè non ha $d_a$. Tuttavia, Bob può usare il prodotto tra $e_b, d_b$ per calcolare $\phi(n)=(p-1)(q-1)$, per ricavare la chiave privata $d_a$ e $e_a$ di Alice.
+
 \subsection{Scambio di chiavi Diffie-Hellman}
 Lo scambio di chiavi Diffie-Hellman (Diffie-Hellman key exchange) è un protocollo crittografico a chiave pubblica che consente a due entità di stabilire una chiave condivisa e segreta utilizzando un canale di comunicazione insicuro (pubblico) senza la necessità che le due parti si siano scambiate informazioni o si siano incontrate in precedenza. La chiave ottenuta mediante questo protocollo può essere successivamente impiegata per cifrare le comunicazioni successive tramite uno schema di crittografia simmetrica. Sebbene l'algoritmo in sé sia anonimo (cioè non autenticato) è alla base di numerosi protocolli autenticati. L'idea di base è \textit{l'intrattabilità del logaritmo discreto}.\\
 Dato un numero primo $p$ si definisce \textit{radice primitiva di} $p$ un numero $\alpha$ per cui vale che
