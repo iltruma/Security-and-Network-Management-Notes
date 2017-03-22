@@ -59,8 +59,8 @@ Vediamo adesso i \textit{requisiti} che deve soddisfare una funzione hash $h$.
 Oltre a queste proprietà elementari si aggiungono:
 \begin{itemize}
 	\item \textbf{Preimage resistance}. Essenzialmente, per tutti gli output pre-specificati $Y=\{y_1,\dots,y_n\}$, deve essere computazionalmente intrattabile trovare un qualsiasi input $x$ tale per cui, applicando $h$, si abbia come risultato $y=h(x)$, dove $y\in Y$. Ossia: l'attaccante conosce l'hash e cerca di risalire al messaggio avente tale hash.
-	\item \textbf{2nd-preimage resistance}. Deve essere computazionalmente intrattabile trovare un secondo input che presenta lo stesso output di un input specificato, i.e. dato $x$ deve essere \textquotedblleft impossibile" trovare una 2nd-preimage $x'\neq x$ tale che $h(x') = h(x)$. Ossia: l'attaccante conosce il messaggio e ne cerca un altro con lo stesso hash.
-	\item \textbf{Collision resistance}. Deve essere computazionalmente intrattabile trovare due input $x, x'$ che presentino lo stesso output, i.e. tali che $h(x') = h(x)$, ossia trovare due messaggi diversi che abbiano hash uguale.
+	\item \textbf{2nd-preimage resistance}. Deve essere computazionalmente intrattabile trovare un secondo input che presenta lo stesso output di un input specificato, i.e. dato $x$ deve essere \textquotedblleft impossibile" trovare una 2nd-preimage $x'\neq x$ tale che $h(x') = h(x)$. Ossia: l'attaccante conosce il messaggio e ne cerca un altro con lo stesso hash. 
+	\item \textbf{Collision resistance}. Deve essere computazionalmente intrattabile trovare due input $x, x'$ che presentino lo stesso output, i.e. tali che $h(x') = h(x)$, ossia trovare due messaggi diversi che abbiano hash uguale. A differenza del 2nd-preimage, qui posso scegliere arbitrariamente i due messaggi.
 \end{itemize}
 Si noti che comunque una funzione hash è robusta se la sua entropia è massima, cioè ogni bit della signature viene generato in modo equiprobabile. 
 
