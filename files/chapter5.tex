@@ -63,7 +63,7 @@ Tra gli attacchi a livello rete vi sono sempre quelli di tipo DoS (es. Ping ICMP
 	\begin{enumerate} 
    	 \item \textit{Spoofing non cieco:} l'attacante cerca di farsi passare per un host che è nella sua stessa sottorete.
    	 \item \textit{Spoofing cieco:} l'attaccante cerca di farsi passare per un host di una qualsiasi sottorete.
-   	 \item \textit{Smurf:} l'attaccante fa lo spoofing dell'IP dellla vittima e comincia a mandare pacchetti ICMP Echo Reply causando un DoS alla vittima (DoS 			 				type).
+   	 \item \textit{Smurf:} l'attaccante fa lo spoofing dell'IP dellla vittima e comincia a mandare pacchetti ICMP Echo Request causando un DoS alla vittima (DoS 			 				type).
    	 \end{enumerate}
 \item Source Routing: tecnica che permette di specificare all'interno dell'header IP il tragitto (route) che il pacchetto deve seguire, invece che farlo decidere direttamente ai gateways.
 \item DNS Spoofing e Cache Poisoning: viene modificata la cache del DNS in modo da ritornare un indirizzo IP sbagliato se qualcuno fa una richiesta al name-server.
